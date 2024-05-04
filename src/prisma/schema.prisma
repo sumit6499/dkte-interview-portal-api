@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id         String      @id @default(uuid())
+  CreatedAt  DateTime    @default(now())
+  name       String
+  PRN        String      @unique
+  dept       Dept        @default(CSE)
+  email      String      @unique
+  role       Role        @default(Student)
+  password   String
+  phone      String      @unique
+  interviews Interview[]
+
+  @@index([id, PRN])
+}
+
+enum Dept {
+  CSE
+  AI
+  AIDS
+  ENTC
+  MECH
+  ELECTRIC
+  CIVIL
+}
+
+enum Role {
+  Admin
+  Student
+  Interviewer
+}
+
+model Faculty {
+  id         String      @id @default(uuid())
+  createdAt  DateTime    @default(now())
+  username   String      @unique
+  name       String
+  dept       Dept        @default(CSE)
+  phone      String      @unique
+  email      String      @unique
+  password   String
+  interviews Interview[]
+}
+
+model Interview {
+  id            String       @id @default(uuid())
+  createdAt     DateTime     @default(now())
+  link          String       @unique
+  date          DateTime
+  startedAt     DateTime
+  endsAt        DateTime
+  Student       Student?     @relation(fields: [studentId], references: [id])
+  studentId     String?
+  feedback      Feedback?
+  Interviewer   Interviewer? @relation(fields: [interviewerId], references: [id])
+  interviewerId String?
+  Faculty       Faculty?     @relation(fields: [facultyId], references: [id])
+  facultyId     String?
+
+  @@index([id])
+}
+
+model Feedback {
+  id            String    @id @default(uuid())
+  technical     Int
+  communication Int
+  behaviour     Int
+  apperance     Int
+  feedback      String
+  Interview     Interview @relation(fields: [interviewId], references: [id])
+  interviewId   String    @unique
+}
+
+model Interviewer {
+  id         String      @id @default(uuid())
+  name       String
+  phone      String      @unique
+  freeday    Day         @map("free_day")
+  freetime   DateTime
+  password   String
+  interviews Interview[]
+}
+
+enum Day {
+  SUN
+  MON
+  TUE
+  WED
+  THU
+  FRI
+  SAT
+}
