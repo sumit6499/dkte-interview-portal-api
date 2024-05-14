@@ -3,8 +3,14 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import connect from "./setup/databse.js";
+import studentAuth from "./routes/auth/studentAuth.js";
+import adminAuth from "./routes/auth/adminAuth.js";
+import interviewerAuth from "./routes/auth/interviewerAuth.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import interviewRoutes from "./routes/interviewRoutes.js";
+
 const prisma = new PrismaClient();
 dotenv.config();
 
@@ -27,22 +33,27 @@ app.use((req, res, next) => {
   next();
 });
 
-//student routes
-app.use("/students", studentRoutes);
-app.use("/admin", adminRoutes);
+//Auth routes
+app.use("/students", studentAuth);
+app.use("/admin", adminAuth);
+app.use("/interviewer", interviewerAuth);
+
+//api routes
+app.use("/api/v1/auth/students", studentRoutes);
+app.use("/api/v1/auth/admin", adminRoutes);
+app.use("/api/v1/auth/interview", interviewRoutes);
+
+//database connect
+connect();
 
 const main = async () => {
   try {
+    const student = await prisma.student.findMany();
 
+    // const interview=await prisma.interview.deleteMany()
+    // console.log(interview)
 
-    const students = await prisma.student.findMany({
-      include: {
-        interviews: true,
-      },
-    });
-
-    console.log(students[0]);
-
+    console.log(student);
   } catch (error) {
     console.log(error);
   }
