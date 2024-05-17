@@ -3,8 +3,23 @@ const prisma = new PrismaClient();
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 dotenv.config();
+
+const s3client = new S3Client({
+  region: "ap-south-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+  },
+});
+
 
 const login = async (req, res) => {
   try {
@@ -65,9 +80,11 @@ const login = async (req, res) => {
 };
 
 const signUp = async (req, res) => {
-  const { id_card, name, dept, phone, email, password } = req.body;
+  const { name, dept, phone, email, password } = req.body;
+  const idCard = req.file;
+  console.log(idCard);
   try {
-    if (!id_card || !name || !dept || !email || !password) {
+    if (!idCard || !name || !dept || !email || !password||!phone) {
       return res.status(400).json({
         succes: false,
         msg: "Please provide all details",
@@ -87,12 +104,34 @@ const signUp = async (req, res) => {
       });
     }
 
+    const getIdCardURL = async () => {
+      const command = new PutObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `admin/idCard/${idCard.originalname}`,
+        Body: idCard.buffer,
+        ContentType: idCard.mimetype,
+      });
+
+      await s3client.send(command);
+
+      const getObjectCmd = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `admin/idCard/${idCard.originalname}`,
+      });
+
+      const url = await getSignedUrl(s3client, getObjectCmd);
+      return url;
+    };
+
+    const idCardURL = await getIdCardURL();
+
+
     const encryptedPassword = await bcrypt.hash(password, 12);
 
     const faculty = await prisma.faculty.create({
       data: {
         name: name,
-        id_card: id_card,
+        id_card: idCardURL,
         dept: dept,
         phone: phone,
         email: email,
@@ -108,7 +147,7 @@ const signUp = async (req, res) => {
 
     return res.status(200).json({
       succes: true,
-      data: student,
+      data: faculty,
       token: token,
       msg: "User Successfully created",
     });
@@ -168,4 +207,4 @@ const updateAdmin = async (req, res) => {
   }
 };
 
-export { login, signUp,updateAdmin };
+export { login, signUp, updateAdmin };

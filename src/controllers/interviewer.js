@@ -3,12 +3,27 @@ const prisma = new PrismaClient();
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 dotenv.config();
 
+const s3client = new S3Client({
+  region: "ap-south-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+  },
+});
+
 const signUp = async (req, res) => {
-  const { name, email, phone, freeday, startTime, endTime, password,id_card } =
+  const { name, email, phone, freeday, startTime, endTime, password } =
     req.body;
+  const idCard = req.file;
   try {
     if (
       !name ||
@@ -17,8 +32,8 @@ const signUp = async (req, res) => {
       !phone ||
       !email ||
       !startTime ||
-      !endTime||
-      !id_card
+      !endTime ||
+      !idCard
     ) {
       return res.status(400).json({
         succes: false,
@@ -41,7 +56,26 @@ const signUp = async (req, res) => {
 
     const encryptedPassword = await bcrypt.hash(password, 12);
 
-    
+    const getIdCardURL = async () => {
+      const command = new PutObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `interviewer/idCard/${idCard.originalname}`,
+        Body: idCard.buffer,
+        ContentType: idCard.mimetype,
+      });
+
+      await s3client.send(command);
+
+      const getObjectCmd = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `interviewer/idCard/${idCard.originalname}`,
+      });
+
+      const url = await getSignedUrl(s3client, getObjectCmd);
+      return url;
+    };
+
+    const idCardURL = await getIdCardURL();
 
     const interviewer = await prisma.interviewer.create({
       data: {
@@ -52,7 +86,7 @@ const signUp = async (req, res) => {
         startTime: startTime,
         endTime: endTime,
         password: encryptedPassword,
-        id_card:id_card,
+        id_card: idCardURL,
       },
     });
 

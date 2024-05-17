@@ -10,6 +10,7 @@ import interviewerAuth from "./routes/auth/interviewerAuth.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
+import paymentRoutes from './routes/paymentRoutes.js'
 
 const prisma = new PrismaClient();
 dotenv.config();
@@ -48,7 +49,7 @@ connect();
 
 const main = async () => {
   try {
-    const student = await prisma.student.findMany();
+    const student = await prisma.faculty.deleteMany();
 
     // const interview=await prisma.interview.deleteMany()
     // console.log(interview)

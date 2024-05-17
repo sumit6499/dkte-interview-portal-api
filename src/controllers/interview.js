@@ -77,6 +77,8 @@ const scheduleInterview = async (req, res) => {
 
     console.log("student", student, "interviewer", interview);
 
+
+
     return res.status(200).json({
       success: true,
       msg: "Interview scheduled successfully",

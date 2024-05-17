@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import connect from "../setup/databse";
 const prisma = new PrismaClient();
 
 const getPayment = async (req, res) => {
@@ -35,48 +34,48 @@ const getPayment = async (req, res) => {
   }
 };
 
-const postPayment = async (req, res) => {
-  try {
-    const { id: _id } = req.params;
-    const { transactionId, image } = req.body;
+// const postPayment = async (req, res) => {
+//   try {
+//     const { id: _id } = req.params;
+//     const { transactionId, image } = req.body;
 
-    if (!_id) {
-      return res.status(400).json({
-        success: false,
-        msg: "Please provide student id",
-      });
-    }
+//     if (!_id) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: "Please provide student id",
+//       });
+//     }
 
-    const payment = await prisma.payment.create({
-      data: {
-        transactionId: transactionId,
-        image: image,
-      },
-    });
+//     const payment = await prisma.payment.create({
+//       data: {
+//         transactionId: transactionId,
+//         image: image,
+//       },
+//     });
 
-    const student = await prisma.student.update({
-      where: {
-        id: _id,
-      },
-      data: {
-        Payment: {
-          connect: {
-            id: payment.id,
-          },
-        },
-      },
-    });
+//     const student = await prisma.student.update({
+//       where: {
+//         id: _id,
+//       },
+//       data: {
+//         Payment: {
+//           connect: {
+//             id: payment.id,
+//           },
+//         },
+//       },
+//     });
 
-    return res.status(200).json({
-      success: true,
-      msg: "Payment done successfully",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      msg: "Internal server error",
-    });
-  }
-};
+//     return res.status(200).json({
+//       success: true,
+//       msg: "Payment done successfully",
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       msg: "Internal server error",
+//     });
+//   }
+// };
 
-export { getPayment, postPayment };
+export { getPayment };

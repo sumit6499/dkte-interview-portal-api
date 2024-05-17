@@ -13,6 +13,7 @@ const router = express.Router();
 router.patch("/:id", auth, updateStudent);
 router.get("/all", auth, getStudent);
 router.delete("/:id", deleteStudent);
+
 // router.post("/:id/payment", postPayment);
 // router.get("/:id/payment", getPayment);
 export default router;
