@@ -30,7 +30,7 @@ app.use(express.json({ limit: "30mb" }));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-  console.log("http method=>" + `${req.method} ` + Date.now());
+  console.log("http method=>" + `${req.method} -> ${req.originalUrl} ->` + Date.now());
   next();
 });
 
@@ -49,7 +49,7 @@ connect();
 
 const main = async () => {
   try {
-    const student = await prisma.faculty.deleteMany();
+    const student = await prisma.interviewer.deleteMany();
 
     // const interview=await prisma.interview.deleteMany()
     // console.log(interview)
