@@ -10,7 +10,8 @@ import interviewerAuth from "./src/routes/auth/interviewerAuth.js";
 import studentRoutes from "./src/routes/studentRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
 import interviewRoutes from "./src/routes/interviewRoutes.js";
-import paymentRoutes from './src/routes/paymentRoutes.js'
+import paymentRoutes from "./src/routes/paymentRoutes.js";
+import sendInterviewNotification from './src/feat/mail.js'
 
 const prisma = new PrismaClient();
 dotenv.config();
@@ -30,7 +31,9 @@ app.use(express.json({ limit: "30mb" }));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-  console.log("http method=>" + `${req.method} -> ${req.originalUrl} ->` + Date.now());
+  console.log(
+    "http method=>" + `${req.method} -> ${req.originalUrl} ->` + Date.now()
+  );
   next();
 });
 
@@ -49,7 +52,7 @@ connect();
 
 const main = async () => {
   try {
-    const student = await prisma.interviewer.deleteMany();
+    const student = await prisma.interview.deleteMany();
 
     // const interview=await prisma.interview.deleteMany()
     // console.log(interview)
@@ -62,7 +65,10 @@ const main = async () => {
 
 // main();
 
-app.get("/", (req, res) => {
+app.get("/", async(req, res) => {
+
+  //mail feat
+ 
   return res.status(200).json({
     success: true,
     msg: "Hello from server",

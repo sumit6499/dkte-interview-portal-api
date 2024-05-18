@@ -90,6 +90,9 @@ const signUp = async (req, res) => {
       },
     });
 
+
+    
+
     const token = jwt.sign(
       { email: interviewer.email, id: interviewer.id },
       process.env.JWT_SECRET_KEY,

@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import sendInterviewNotification from '../feat/mail.js'
+import moment from 'moment'
 
 const scheduleInterview = async (req, res) => {
   try {
@@ -29,15 +31,14 @@ const scheduleInterview = async (req, res) => {
     }
 
     const [year, month, day] = dateString.split("-").map(Number);
-    console.log(year,month,day)
+    console.log(year, month, day);
     const [startHours, startMinutes] = startedAt.split(":").map(Number);
-    console.log(startHours,startMinutes)
+    console.log(startHours, startMinutes);
     const [endHours, endMinutes] = endsAt.split(":").map(Number);
 
     const date = new Date(year, month - 1, day);
     const startTime = new Date(year, month - 1, day, startHours, startMinutes);
     const endTime = new Date(year, month - 1, day, endHours, endMinutes);
-
 
     const interview = await prisma.interview.create({
       data: {
@@ -77,8 +78,22 @@ const scheduleInterview = async (req, res) => {
 
     console.log("student", student, "interviewer", interview);
 
+    const formattedDate = moment(interview.date).format('YYYY-MM-DD');
+    const formattedTime = moment(interview.startedAt).format('hh:mm A');
 
+    //mail sending feat
 
+    sendInterviewNotification(
+      "sumitpadalkar08@gmail.com",
+      `${student.email} , ${interviewer.email}`,
+      `${student.name}`,
+      `${interviewer.name}`,
+      `${interview.link}`,
+      `${formattedDate}`,
+      `${formattedTime}`
+    );
+    
+    
     return res.status(200).json({
       success: true,
       msg: "Interview scheduled successfully",
