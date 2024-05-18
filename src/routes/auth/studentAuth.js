@@ -16,7 +16,7 @@ router.post(
   upload.fields([
     { name: "resume", maxCount: 1 },
     { name: "idCard", maxCount: 1 },
-    { name: "paymentImg", maxCount: 1 },
+    { name: "paymentImage", maxCount: 1 },
   ]),
   signUp
 );

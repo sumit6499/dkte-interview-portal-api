@@ -21,23 +21,25 @@ const s3client = new S3Client({
 });
 
 const signUp = async (req, res) => {
-  const { name, prn, email, password, phone, dept, transID } = req.body;
+  const { name, PRN, email, password, phone, dept, UPI } = req.body;
 
   const resume = req.files["idCard"][0];
   const idCard = req.files["resume"][0];
-  const paymentImg = req.files["paymentImg"][0];
+  const paymentImg = req.files["paymentImage"][0];
+
+
 
   try {
     if (
       !name ||
-      !prn ||
+      !PRN ||
       !password ||
       !phone ||
       !email ||
       !dept ||
       !idCard ||
       !resume ||
-      !transID ||
+      !UPI ||
       !paymentImg
     ) {
       return res.status(400).json({
@@ -132,12 +134,12 @@ const signUp = async (req, res) => {
         email: email,
         phone: phone,
         dept: dept,
-        PRN: prn,
+        PRN: PRN,
         password: encryptedPassword,
         resume: resumeURL,
         Payment: {
           create: {
-            transactionId: transID,
+            transactionId: UPI,
             image: paymentImgURL,
           },
         },
