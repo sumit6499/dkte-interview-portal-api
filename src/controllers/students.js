@@ -371,11 +371,12 @@ const getStudentInfo = async (req, res) => {
   try {
     const { id: _id } = req.params;
 
-    const student = prisma.student.findFirst({
+    const student = await prisma.student.findFirst({
       where: {
         id: _id,
       },
     });
+    console.log(student);
 
     if (!student) {
       return res.status(404).json({
