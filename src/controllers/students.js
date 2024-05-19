@@ -228,7 +228,7 @@ const updateStudent = async (req, res) => {
     const { id: _id } = req.params;
     const studentData = req.body;
 
-    if (!id || !studentData) {
+    if (!_id || !studentData) {
       return res.status(404).json({
         success: false,
         msg: "please provide student details",
