@@ -166,7 +166,7 @@ const getFeedback = async (req, res) => {
   try {
     const { id: _id } = req.params;
 
-    const feedback = prisma.interview.findFirst({
+    const feedback = await prisma.interview.findFirst({
       where: {
         id: _id,
       },
