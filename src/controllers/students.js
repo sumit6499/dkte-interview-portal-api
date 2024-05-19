@@ -279,10 +279,18 @@ const getStudent = async (req, res) => {
       },
     });
 
+    if (!students) {
+      return res.status(404).json({
+        success: false,
+        msg: "Not any student found please singup",
+      });
+    }
+
     console.log(students);
 
     return res.status(200).json({
       success: true,
+      msg: "All students data fetched successfully",
       data: students,
     });
   } catch (error) {

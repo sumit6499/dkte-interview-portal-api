@@ -11,7 +11,7 @@ import {
 
 const router = express.Router();
 
-router.get("/:id", auth, getStudentInfo);
+router.get("/:id/info", auth, getStudentInfo);
 router.patch("/:id", auth, updateStudent);
 router.get("/all", auth, getStudent);
 router.delete("/:id", auth, deleteStudent);
