@@ -32,7 +32,7 @@ const login = async (req, res) => {
       });
     }
 
-    const existingUser = await prisma.student.findFirst({
+    const existingUser = await prisma.faculty.findFirst({
       where: { email: email },
     });
 

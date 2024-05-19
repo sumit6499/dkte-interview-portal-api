@@ -52,7 +52,7 @@ connect();
 
 const main = async () => {
   try {
-    const student = await prisma.interview.deleteMany();
+    const student = await prisma.student.findMany();
 
     // const interview=await prisma.interview.deleteMany()
     // console.log(interview)

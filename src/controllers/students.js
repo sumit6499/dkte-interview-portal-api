@@ -27,8 +27,6 @@ const signUp = async (req, res) => {
   const idCard = req.files["resume"][0];
   const paymentImg = req.files["paymentImage"][0];
 
-
-
   try {
     if (
       !name ||
@@ -361,6 +359,37 @@ const uploadID = async (req, res) => {
   }
 };
 
+const getStudentInfo = async (req, res) => {
+  try {
+    const { id: _id } = req.params;
+
+    const student = prisma.student.findFirst({
+      where: {
+        id: _id,
+      },
+    });
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        msg: "Not existing Student found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      msg: "Student info fetched successfully",
+      data: student,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      msg: "Internal Server error",
+    });
+  }
+};
+
 export {
   login,
   signUp,
@@ -369,4 +398,5 @@ export {
   getStudent,
   uploadResume,
   uploadID,
+  getStudentInfo,
 };
