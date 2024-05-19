@@ -71,7 +71,9 @@ const signUp = async (req, res) => {
         Key: `interviewer/idCard/${idCard.originalname}`,
       });
 
-      const url = await getSignedUrl(s3client, getObjectCmd);
+      const url = await getSignedUrl(s3client, getObjectCmd, {
+        expiresIn: 60 * 60 * 24 * 365 * 10,
+      });
       return url;
     };
 

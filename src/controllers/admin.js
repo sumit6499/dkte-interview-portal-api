@@ -20,7 +20,6 @@ const s3client = new S3Client({
   },
 });
 
-
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -84,7 +83,7 @@ const signUp = async (req, res) => {
   const idCard = req.file;
   console.log(idCard);
   try {
-    if (!idCard || !name || !dept || !email || !password||!phone) {
+    if (!idCard || !name || !dept || !email || !password || !phone) {
       return res.status(400).json({
         succes: false,
         msg: "Please provide all details",
@@ -119,12 +118,13 @@ const signUp = async (req, res) => {
         Key: `admin/idCard/${idCard.originalname}`,
       });
 
-      const url = await getSignedUrl(s3client, getObjectCmd);
+      const url = await getSignedUrl(s3client, getObjectCmd, {
+        expiresIn: 60 * 60 * 24 * 365 * 10,
+      });
       return url;
     };
 
     const idCardURL = await getIdCardURL();
-
 
     const encryptedPassword = await bcrypt.hash(password, 12);
 

@@ -52,13 +52,13 @@ connect();
 
 const main = async () => {
   try {
-    const student = await prisma.interviewer.findMany({
+    const student = await prisma.faculty.findMany({
       include: {
         interviews: true,
       },
     });
 
-    console.log(student[3].interviews)
+    console.log(student);
 
     // const interview=await prisma.interview.deleteMany()
     // console.log(interview)
@@ -69,7 +69,7 @@ const main = async () => {
   }
 };
 
-main();
+// main();
 
 app.get("/", async (req, res) => {
   //mail feat

@@ -195,10 +195,16 @@ const getFeedback = async (req, res) => {
   }
 };
 
-const getAllInterviews = async (req, res) => {
+const getInterviews = async (req, res) => {
   try {
     const { id: _id } = req.params;
     const { filter } = req.query;
+
+    const user = await prisma.faculty.findFirst({
+      where: {
+        id: _id,
+      },
+    });
 
     if (filter === "today") {
       const date = new Date();
@@ -211,6 +217,9 @@ const getAllInterviews = async (req, res) => {
             },
             {
               interviewerId: _id,
+            },
+            {
+              facultyId: _id,
             },
           ],
         },
@@ -246,6 +255,9 @@ const getAllInterviews = async (req, res) => {
             {
               interviewerId: _id,
             },
+            {
+              facultyId: _id,
+            },
           ],
         },
       });
@@ -280,6 +292,9 @@ const getAllInterviews = async (req, res) => {
             {
               interviewerId: _id,
             },
+            {
+              facultyId: _id,
+            },
           ],
         },
       });
@@ -311,4 +326,4 @@ const getAllInterviews = async (req, res) => {
   }
 };
 
-export { scheduleInterview, getFeedback, createFeedback, getAllInterviews };
+export { scheduleInterview, getFeedback, createFeedback, getInterviews };
