@@ -370,13 +370,85 @@ const uploadID = async (req, res) => {
 const getStudentInfo = async (req, res) => {
   try {
     const { id: _id } = req.params;
+    const { filter } = req.query;
 
-    const student = await prisma.student.findFirst({
-      where: {
-        id: _id,
-      },
-    });
-    console.log(student);
+
+    if (filter === "today") {
+      const date = new Date();
+      const interview = await prisma.interview.findMany({
+        where: {
+          date: date,
+          studentId: _id,
+        },
+      });
+
+      if (!interview) {
+        return res.status(404).json({
+          success: false,
+          msg: "No interview found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        msg: "Interview fetched successfully",
+        data: interview,
+      });
+    }
+
+    if (filter === "upcoming") {
+      const upcomingDay = new Date();
+      upcomingDay.setDate(upcomingDay.getDate() + 1);
+
+      const upcomingInterview = await prisma.interview.findMany({
+        where: {
+          date: {
+            gt: upcomingDay,
+          },
+          studentId: _id,
+        },
+      });
+
+      if (!upcomingInterview) {
+        return res.status(404).json({
+          success: false,
+          msg: "No upcoming interview found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        msg: "Upcoming interview fetched successfully",
+        data: upcomingInterview,
+      });
+    }
+
+    if (filter === "previous") {
+      const previousDay = new Date();
+      previousDay.setDate(previousDay.getDate() - 1);
+
+      const previousInterview = await prisma.interview.findMany({
+        where: {
+          date: {
+            lt: previousDay,
+          },
+          studentId: _id,
+        },
+      });
+
+      if (!previousInterview) {
+        return res.status(404).json({
+          success: false,
+          msg: "No previous interview",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        msg: "Previous interview fetched successfully",
+        data: previousInterview,
+      });
+    }
 
     if (!student) {
       return res.status(404).json({

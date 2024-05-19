@@ -196,16 +196,19 @@ const getFeedback = async (req, res) => {
   }
 };
 
-const getInterviews = async (req, res) => {
+const getAllInterviews = async (req, res) => {
   try {
     const { id: _id } = req.params;
     const { filter } = req.query;
 
+
+    
     if (filter === "today") {
       const date = new Date();
       const interview = await prisma.interview.findMany({
         where: {
           date: date,
+          studentId: _id,
         },
       });
 
@@ -232,6 +235,7 @@ const getInterviews = async (req, res) => {
           date: {
             gt: upcomingDay,
           },
+          studentId: _id,
         },
       });
 
@@ -258,6 +262,7 @@ const getInterviews = async (req, res) => {
           date: {
             lt: previousDay,
           },
+          studentId: _id,
         },
       });
 
@@ -288,4 +293,4 @@ const getInterviews = async (req, res) => {
   }
 };
 
-export { scheduleInterview, getFeedback, createFeedback, getInterviews };
+export { scheduleInterview, getFeedback, createFeedback, getAllInterviews };

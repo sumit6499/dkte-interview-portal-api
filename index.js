@@ -11,7 +11,7 @@ import studentRoutes from "./src/routes/studentRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
 import interviewRoutes from "./src/routes/interviewRoutes.js";
 import paymentRoutes from "./src/routes/paymentRoutes.js";
-import sendInterviewNotification from './src/feat/mail.js'
+import sendInterviewNotification from "./src/feat/mail.js";
 
 const prisma = new PrismaClient();
 dotenv.config();
@@ -52,23 +52,28 @@ connect();
 
 const main = async () => {
   try {
-    const student = await prisma.student.findMany();
+    const student = await prisma.interviewer.findMany({
+      include: {
+        interviews: true,
+      },
+    });
+
+    console.log(student[3].interviews)
 
     // const interview=await prisma.interview.deleteMany()
     // console.log(interview)
 
-    console.log(student);
+    // console.log(student);
   } catch (error) {
     console.log(error);
   }
 };
 
-// main();
+main();
 
-app.get("/", async(req, res) => {
-
+app.get("/", async (req, res) => {
   //mail feat
- 
+
   return res.status(200).json({
     success: true,
     msg: "Hello from server",

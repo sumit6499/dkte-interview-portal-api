@@ -3,14 +3,14 @@ import auth from "../middleware/auth.js";
 import {
   scheduleInterview,
   getFeedback,
-  getInterviews,
+  getAllInterviews,
   createFeedback,
 } from "../controllers/interview.js";
 
 const router = express.Router();
 
 router.post("/:id/schedule", auth, scheduleInterview);
-router.get("/:id/all", auth, getInterviews);
+router.get("/:id/all", auth, getAllInterviews);
 router.get("/:id/feedback", auth, getFeedback);
 router.post("/:id/feedback", auth, createFeedback);
 
