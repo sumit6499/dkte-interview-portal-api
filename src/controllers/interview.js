@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import sendInterviewNotification from '../feat/mail.js'
-import moment from 'moment'
+import sendInterviewNotification from "../feat/mail.js";
+import moment from "moment";
 
 const scheduleInterview = async (req, res) => {
   try {
@@ -78,8 +78,8 @@ const scheduleInterview = async (req, res) => {
 
     console.log("student", student, "interviewer", interview);
 
-    const formattedDate = moment(interview.date).format('YYYY-MM-DD');
-    const formattedTime = moment(interview.startedAt).format('hh:mm A');
+    const formattedDate = moment(interview.date).format("YYYY-MM-DD");
+    const formattedTime = moment(interview.startedAt).format("hh:mm A");
 
     //mail sending feat
 
@@ -92,8 +92,7 @@ const scheduleInterview = async (req, res) => {
       `${formattedDate}`,
       `${formattedTime}`
     );
-    
-    
+
     return res.status(200).json({
       success: true,
       msg: "Interview scheduled successfully",
@@ -201,14 +200,19 @@ const getAllInterviews = async (req, res) => {
     const { id: _id } = req.params;
     const { filter } = req.query;
 
-
-    
     if (filter === "today") {
       const date = new Date();
       const interview = await prisma.interview.findMany({
         where: {
           date: date,
-          studentId: _id,
+          OR: [
+            {
+              studentId: _id,
+            },
+            {
+              interviewerId: _id,
+            },
+          ],
         },
       });
 
@@ -235,7 +239,14 @@ const getAllInterviews = async (req, res) => {
           date: {
             gt: upcomingDay,
           },
-          studentId: _id,
+          OR: [
+            {
+              studentId: _id,
+            },
+            {
+              interviewerId: _id,
+            },
+          ],
         },
       });
 
@@ -262,7 +273,14 @@ const getAllInterviews = async (req, res) => {
           date: {
             lt: previousDay,
           },
-          studentId: _id,
+          OR: [
+            {
+              studentId: _id,
+            },
+            {
+              interviewerId: _id,
+            },
+          ],
         },
       });
 
