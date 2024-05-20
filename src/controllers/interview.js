@@ -108,44 +108,41 @@ const scheduleInterview = async (req, res) => {
 
 const createFeedback = async (req, res) => {
   try {
-    const { technical, communication, behaviour, apperance, feedbacks } =
-      req.body;
-
+    const {
+      technical,
+      communication,
+      behaviour,
+      apperance,
+      feedback: feedbackText,
+    } = req.body;
     const { id: _id } = req.params;
 
-    if (!technical || !communication || !behaviour || !apperance || feedback) {
+    if (
+      !technical ||
+      !communication ||
+      !behaviour ||
+      !apperance ||
+      !feedbackText
+    ) {
       return res.status(400).json({
         success: false,
         msg: "Please provide all details",
       });
     }
-    
 
     const technicalNum = parseInt(technical, 10);
     const communicationNum = parseInt(communication, 10);
     const behaviourNum = parseInt(behaviour, 10);
     const apperanceNum = parseInt(apperance, 10);
 
-    const feedback = await prisma.feedback.create({
+    const newFeedback = await prisma.feedback.create({
       data: {
         technical: technicalNum,
         communication: communicationNum,
         behaviour: behaviourNum,
         apperance: apperanceNum,
-        feedback: feedbacks,
-      },
-    });
-
-    const interview = await prisma.interview.update({
-      where: {
-        id: _id,
-      },
-      data: {
-        feedback: {
-          connect: {
-            id: feedback.id,
-          },
-        },
+        feedback: feedbackText,
+        interviewId: _id, // Use interviewId as defined in the schema
       },
     });
 
