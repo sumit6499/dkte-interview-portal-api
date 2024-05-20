@@ -119,6 +119,7 @@ const createFeedback = async (req, res) => {
         msg: "Please provide all details",
       });
     }
+    
 
     const technicalNum = parseInt(technical, 10);
     const communicationNum = parseInt(communication, 10);
@@ -312,7 +313,7 @@ const getInterviews = async (req, res) => {
         data: previousInterview,
       });
     }
-
+    console.log("filer obtainerd is ", filter);
     return res.status(400).json({
       success: false,
       msg: "Filter value invalid",

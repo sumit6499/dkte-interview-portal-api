@@ -78,7 +78,7 @@ const signUp = async (req, res) => {
       });
 
       const url = await getSignedUrl(s3client, getObjectCmd, {
-        expiresIn: 60 * 60 * 24 * 365 * 10,
+        expiresIn: 60 * 60 * 24 * 7, //one week
       });
       return url;
     };
@@ -99,7 +99,7 @@ const signUp = async (req, res) => {
       });
 
       const url = await getSignedUrl(s3client, getObjectCmd, {
-        expiresIn: 60 * 60 * 24 * 365 * 10,
+        expiresIn: 60 * 60 * 24 * 7, 
       });
       return url;
     };
@@ -120,7 +120,7 @@ const signUp = async (req, res) => {
       });
 
       const url = await getSignedUrl(s3client, getObjectCmd, {
-        expiresIn: 60 * 60 * 24 * 365 * 10,
+        expiresIn: 60 * 60 * 24 * 7, 
       });
       return url;
     };
@@ -455,7 +455,11 @@ const getStudentInfo = async (req, res) => {
         data: previousInterview,
       });
     }
-
+     const student = await prisma.student.findFirst({
+       where: {
+         id: _id,
+       },
+     });
     if (!student) {
       return res.status(404).json({
         success: false,
@@ -469,8 +473,9 @@ const getStudentInfo = async (req, res) => {
       data: student,
     });
   } catch (error) {
-    console.log(error);
+    console.log("THe err is "+error);
     return res.status(500).json({
+      // console.log(error),
       success: false,
       msg: "Internal Server error",
     });
