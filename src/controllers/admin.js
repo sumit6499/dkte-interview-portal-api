@@ -119,7 +119,7 @@ const signUp = async (req, res) => {
       });
 
       const url = await getSignedUrl(s3client, getObjectCmd, {
-        expiresIn: 60 * 60 * 24 * 365 * 10,
+        expiresIn: 60 * 60 * 24 * 7,
       });
       return url;
     };
@@ -165,7 +165,7 @@ const updateAdmin = async (req, res) => {
     const { id: _id } = req.params;
     const adminData = req.body;
 
-    if (!id || !adminData) {
+    if (!_id || !adminData) {
       return res.status(404).json({
         success: false,
         msg: "please provide faculty details",

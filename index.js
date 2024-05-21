@@ -12,6 +12,7 @@ import adminRoutes from "./src/routes/adminRoutes.js";
 import interviewRoutes from "./src/routes/interviewRoutes.js";
 import paymentRoutes from "./src/routes/paymentRoutes.js";
 import sendInterviewNotification from "./src/feat/mail.js";
+import interviewerRoutes from "./src/routes/interviewerRoutes.js";
 
 const prisma = new PrismaClient();
 dotenv.config();
@@ -46,6 +47,7 @@ app.use("/interviewer", interviewerAuth);
 app.use("/api/v1/auth/students", studentRoutes);
 app.use("/api/v1/auth/admin", adminRoutes);
 app.use("/api/v1/auth/interview", interviewRoutes);
+app.use("/api/v1/auth/interviewer", interviewerRoutes);
 
 //database connect
 connect();

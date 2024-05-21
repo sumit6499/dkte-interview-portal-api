@@ -72,7 +72,7 @@ const signUp = async (req, res) => {
       });
 
       const url = await getSignedUrl(s3client, getObjectCmd, {
-        expiresIn: 60 * 60 * 24 * 365 * 10,
+        expiresIn: 60 * 60 * 24 * 7,
       });
       return url;
     };
@@ -173,5 +173,36 @@ const login = async (req, res) => {
     });
   }
 };
+const getInterviewers = async (req, res) => {
+  try {
+    console.log(req.params);
+    const {day:day} = await req.params;
+    console.log("THe day si ",day)
+    const interviewers = await prisma.interviewer.findMany({
+      where: {
+        freeday: day,
+      },
+    });
+ console.log("the itnerivwers are" + interviewers);
+    if (!interviewers) {
+      return res.status(404).json({
+        success: false,
+        msg: "Not any interviewer found ",
+      });
+    }
 
-export { login, signUp };
+  
+    return res.status(200).json({
+      success: true,
+      msg: "All interviewers data fetched successfully",
+      data: interviewers,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: "Internal server error",
+    });
+  }
+};
+
+export { login, signUp, getInterviewers };

@@ -5,7 +5,7 @@ const getPayment = async (req, res) => {
   try {
     const { id: _id } = req.params;
 
-    if (!id) {
+    if (!_id) {
       return res.status(400).json({
         success: false,
         msg: "Please provide student id",
