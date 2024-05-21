@@ -99,7 +99,7 @@ const signUp = async (req, res) => {
       });
 
       const url = await getSignedUrl(s3client, getObjectCmd, {
-        expiresIn: 60 * 60 * 24 * 7, 
+        expiresIn: 60 * 60 * 24 * 7,
       });
       return url;
     };
@@ -120,7 +120,7 @@ const signUp = async (req, res) => {
       });
 
       const url = await getSignedUrl(s3client, getObjectCmd, {
-        expiresIn: 60 * 60 * 24 * 7, 
+        expiresIn: 60 * 60 * 24 * 7,
       });
       return url;
     };
@@ -339,13 +339,54 @@ const deleteStudent = async (req, res) => {
 
 const uploadResume = async (req, res) => {
   try {
-    const { name, prn, email, password, phone, dept } = req.body;
-    console.log(name, prn, email, password, dept, phone);
+    const resume = req.file;
+    const { id: _id } = req.params;
     console.log(req.file);
+
+    if (!resume) {
+      return res.status(404).json({
+        success: false,
+        msg: "please provide resume file",
+      });
+    }
+
+    
+
+    const getResumeURL = async () => {
+      const command = new PutObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `student/resume/${resume.originalname}`,
+        Body: resume.buffer,
+        ContentType: resume.mimetype,
+      });
+      await s3client.send(command);
+
+      const getObjectCmd = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `student/resume/${resume.originalname}`,
+      });
+
+      const url = await getSignedUrl(s3client, getObjectCmd, {
+        expiresIn: 60 * 60 * 24 * 7, //one week
+      });
+      return url;
+    };
+
+    const resumeURL = await getResumeURL();
+
+    const updatedStudent = await prisma.student.update({
+      where: {
+        id: _id,
+      },
+      data: {
+        resume: resumeURL,
+      },
+    });
 
     return res.status(200).json({
       success: true,
       msg: "Success",
+      data: updatedStudent,
     });
   } catch (error) {
     console.log(error);
@@ -377,7 +418,6 @@ const getStudentInfo = async (req, res) => {
   try {
     const { id: _id } = req.params;
     const { filter } = req.query;
-
 
     if (filter === "today") {
       const date = new Date();
@@ -455,11 +495,11 @@ const getStudentInfo = async (req, res) => {
         data: previousInterview,
       });
     }
-     const student = await prisma.student.findFirst({
-       where: {
-         id: _id,
-       },
-     });
+    const student = await prisma.student.findFirst({
+      where: {
+        id: _id,
+      },
+    });
     if (!student) {
       return res.status(404).json({
         success: false,
@@ -473,7 +513,7 @@ const getStudentInfo = async (req, res) => {
       data: student,
     });
   } catch (error) {
-    console.log("THe err is "+error);
+    console.log("THe err is " + error);
     return res.status(500).json({
       // console.log(error),
       success: false,

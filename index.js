@@ -71,10 +71,10 @@ const main = async () => {
   }
 };
 
-main();
+// main();
 
 app.get("/", async (req, res) => {
-  //mail feat
+
 
   return res.status(200).json({
     success: true,
