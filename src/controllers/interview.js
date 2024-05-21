@@ -130,6 +130,21 @@ const createFeedback = async (req, res) => {
       });
     }
 
+    const existingFeedback = await prisma.feedback.findFirst({
+      where: {
+        interviewId: _id,
+      },
+    });
+
+    console.log(existingFeedback);
+
+    if (existingFeedback) {
+      return res.status(409).json({
+        success: true,
+        msg: "Feedback can't be submitted more than once",
+      });
+    }
+
     const technicalNum = parseInt(technical, 10);
     const communicationNum = parseInt(communication, 10);
     const behaviourNum = parseInt(behaviour, 10);
@@ -142,7 +157,7 @@ const createFeedback = async (req, res) => {
         behaviour: behaviourNum,
         apperance: apperanceNum,
         feedback: feedbackText,
-        interviewId: _id, // Use interviewId as defined in the schema
+        interviewId: _id,
       },
     });
 

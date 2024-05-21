@@ -54,9 +54,9 @@ connect();
 
 const main = async () => {
   try {
-    const student = await prisma.faculty.findMany({
+    const student = await prisma.interview.findMany({
       include: {
-        interviews: true,
+        feedback: true,
       },
     });
 
@@ -71,7 +71,7 @@ const main = async () => {
   }
 };
 
-// main();
+main();
 
 app.get("/", async (req, res) => {
   //mail feat
