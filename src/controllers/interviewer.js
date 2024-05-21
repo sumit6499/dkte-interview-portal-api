@@ -92,9 +92,6 @@ const signUp = async (req, res) => {
       },
     });
 
-
-    
-
     const token = jwt.sign(
       { email: interviewer.email, id: interviewer.id },
       process.env.JWT_SECRET_KEY,
@@ -176,14 +173,14 @@ const login = async (req, res) => {
 const getInterviewers = async (req, res) => {
   try {
     console.log(req.params);
-    const {day:day} = await req.params;
-    console.log("THe day si ",day)
+    const { day: day } = await req.params;
+    console.log("THe day si ", day);
     const interviewers = await prisma.interviewer.findMany({
       where: {
         freeday: day,
       },
     });
- console.log("the itnerivwers are" + interviewers);
+    console.log("the itnerivwers are" + interviewers);
     if (!interviewers) {
       return res.status(404).json({
         success: false,
@@ -191,7 +188,6 @@ const getInterviewers = async (req, res) => {
       });
     }
 
-  
     return res.status(200).json({
       success: true,
       msg: "All interviewers data fetched successfully",
@@ -201,6 +197,54 @@ const getInterviewers = async (req, res) => {
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
+    });
+  }
+};
+
+const updateInterviewerInfo = async (req, res) => {
+  try {
+    const { id: _id } = req.params;
+    const { interviewerData } = req.body;
+
+    if (!interviewerData) {
+      res.status(401).json({
+        success: false,
+        msg: "Please provide details",
+      });
+    }
+
+    const existingUser = await prisma.interviewer.findFirst({
+      where: {
+        id: _id,
+      },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        msg: "Interviewer not found",
+      });
+    }
+
+    const updatedInterviewer = await prisma.interviewer.update({
+      where: {
+        id: _id,
+      },
+      data:interviewerData
+    });
+
+
+    return res.status(200).json({
+      success:true,
+      msg:"Interviewer details updated successfully",
+      data:updatedInterviewer
+    })
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      msg: "Internal Server error",
     });
   }
 };

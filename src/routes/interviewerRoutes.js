@@ -6,5 +6,6 @@ const router = express.Router();
 
 
 router.get("/:day/all", auth, getInterviewers);
+router.put("/:id",auth)
 
 export default router;
