@@ -23,8 +23,8 @@ const s3client = new S3Client({
 const signUp = async (req, res) => {
   const { name, PRN, email, password, phone, dept, UPI } = req.body;
 
-  const resume = req.files["idCard"][0];
-  const idCard = req.files["resume"][0];
+  const resume = req.files["resume"][0];
+  const idCard = req.files["idCard"][0];
   const paymentImg = req.files["paymentImage"][0];
 
   try {

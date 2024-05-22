@@ -204,10 +204,11 @@ const getInterviewers = async (req, res) => {
 const updateInterviewerInfo = async (req, res) => {
   try {
     const { id: _id } = req.params;
-    const { interviewerData } = req.body;
-
+    const  interviewerData  = req.body;
+    console.log("the req os",req.body)
+console.log("TYje data here uis ",interviewerData)
     if (!interviewerData) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
         msg: "Please provide details",
       });
@@ -230,23 +231,81 @@ const updateInterviewerInfo = async (req, res) => {
       where: {
         id: _id,
       },
-      data:interviewerData
+      data: interviewerData,
     });
 
-
     return res.status(200).json({
-      success:true,
-      msg:"Interviewer details updated successfully",
-      data:updatedInterviewer
-    })
-
+      success: true,
+      msg: "Interviewer details updated successfully",
+      data: updatedInterviewer,
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        msg: "Internal Server error",
+      });
+    }
+  }
+};
+const uploadIDcard = async (req, res) => {
+  try {
+    const idCard = req.file;
+    const { id: _id } = req.params;
+    console.log(req.file);
+
+    if (!idCard) {
+      return res.status(404).json({
+        success: false,
+        msg: "please provide resume file",
+      });
+    }
+
+    const getIdCardURL = async () => {
+      const command = new PutObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `interviewer/idCard/${idCard.originalname}`,
+        Body: idCard.buffer,
+        ContentType: idCard.mimetype,
+      });
+      await s3client.send(command);
+
+      const getObjectCmd = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `interviewer/idCard/${idCard.originalname}`,
+      });
+
+      const url = await getSignedUrl(s3client, getObjectCmd, {
+        expiresIn: 60 * 60 * 24 * 7, //one week
+      });
+      return url;
+    };
+
+    const idCardURL = await getIdCardURL();
+
+    const updatedInterviewer = await prisma.interviewer.update({
+      where: {
+        id: _id,
+      },
+      data: {
+        idCard: idCardURL,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      msg: "Success",
+      data: updatedInterviewer,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
       success: false,
-      msg: "Internal Server error",
+      msg: "Internal server errors",
     });
   }
 };
 
-export { login, signUp, getInterviewers };
+export { login, signUp, getInterviewers, updateInterviewerInfo, uploadIDcard };
+
