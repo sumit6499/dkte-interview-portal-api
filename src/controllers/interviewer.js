@@ -251,11 +251,11 @@ console.log("TYje data here uis ",interviewerData)
 };
 const uploadIDcard = async (req, res) => {
   try {
-    const idCard = req.file;
+    const id_card = req.file;
     const { id: _id } = req.params;
     console.log(req.file);
 
-    if (!idCard) {
+    if (!id_card) {
       return res.status(404).json({
         success: false,
         msg: "please provide resume file",
@@ -265,15 +265,15 @@ const uploadIDcard = async (req, res) => {
     const getIdCardURL = async () => {
       const command = new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `interviewer/idCard/${idCard.originalname}`,
-        Body: idCard.buffer,
-        ContentType: idCard.mimetype,
+        Key: `interviewer/id_card/${id_card.originalname}`,
+        Body: id_card.buffer,
+        ContentType: id_card.mimetype,
       });
       await s3client.send(command);
 
       const getObjectCmd = new GetObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `interviewer/idCard/${idCard.originalname}`,
+        Key: `interviewer/idCard/${id_card.originalname}`,
       });
 
       const url = await getSignedUrl(s3client, getObjectCmd, {
@@ -289,7 +289,7 @@ const uploadIDcard = async (req, res) => {
         id: _id,
       },
       data: {
-        idCard: idCardURL,
+        id_card: idCardURL,
       },
     });
 
