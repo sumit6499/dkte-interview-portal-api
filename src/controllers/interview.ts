@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import sendInterviewNotification from "../feat/mail.js";
+import sendInterviewNotification from "../feat/mail";
 import moment from "moment";
 import { Request,Response } from "express";
 

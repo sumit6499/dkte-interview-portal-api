@@ -1,12 +1,12 @@
 import express,{Request,Response,NextFunction} from "express";
-import auth from "../middleware/auth.ts";
+import auth from "../middleware/auth";
 import {
   updateStudent,
   getStudents,
   deleteStudent,
   getStudentInfo,
   uploadResume,
-} from "../controllers/students.ts";
+} from "../controllers/students";
 import multer from "multer";
 
 const storage = multer.memoryStorage();

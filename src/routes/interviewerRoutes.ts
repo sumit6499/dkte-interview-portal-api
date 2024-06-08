@@ -1,10 +1,10 @@
 import express from "express";
-import auth from "../middleware/auth.ts";
+import auth from "../middleware/auth";
 import {
   getInterviewers,
   updateInterviewerInfo,
   uploadIDcard,
-} from "../controllers/interviewer.ts";
+} from "../controllers/interviewer";
 import multer from "multer";
 
 const storage = multer.memoryStorage();

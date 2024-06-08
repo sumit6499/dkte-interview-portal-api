@@ -1,5 +1,5 @@
 import express from "express";
-import { signUp, login } from "../../controllers/admin.ts";
+import { signUp, login } from "../../controllers/admin";
 import multer from "multer";
 
 const storage = multer.memoryStorage();

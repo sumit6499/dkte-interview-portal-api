@@ -3,21 +3,21 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
-import connect from "./setup/databse.ts";
-import studentAuth from "./routes/auth/studentAuth.ts";
-import adminAuth from "./routes/auth/adminAuth.ts";
-import interviewerAuth from "./routes/auth/interviewerAuth.ts";
-import studentRoutes from "./routes/studentRoutes.ts";
-import adminRoutes from "./routes/adminRoutes.ts";
-import interviewRoutes from "./routes/interviewRoutes.ts";
-import paymentRoutes from "./routes/paymentRoutes.ts";
-import interviewerRoutes from "./routes/interviewerRoutes.ts";
+import connect from "./setup/databse";
+import studentAuth from "./routes/auth/studentAuth";
+import adminAuth from "./routes/auth/adminAuth";
+import interviewerAuth from "./routes/auth/interviewerAuth";
+import studentRoutes from "./routes/studentRoutes";
+import adminRoutes from "./routes/adminRoutes";
+import interviewRoutes from "./routes/interviewRoutes";
+import paymentRoutes from "./routes/paymentRoutes";
+import interviewerRoutes from "./routes/interviewerRoutes";
 
 const prisma = new PrismaClient();
 dotenv.config();
 
 const app = express();
-const PORT:number = 3000 || process.env.PORT;
+const PORT = 3000 || process.env.PORT;
 
 app.use(
   cors({

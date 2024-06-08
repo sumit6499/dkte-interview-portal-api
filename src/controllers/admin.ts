@@ -10,7 +10,7 @@ import {
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import s3client from '../setup/awsClient.js'
+import s3client from '../setup/awsClient'
 
 dotenv.config();
 

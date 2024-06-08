@@ -1,20 +1,15 @@
 {
   "compilerOptions": {
-   
-    "module": "NodeNext",                                /* Specify what module code is generated. */
-    "target": "ES6",                                  /* Set the JavaScript language version for emitted JavaScript and include */
-    "rootDir": "./src",                                  /* Specify the root folder within your source files. */
-    "moduleResolution": "NodeNext",                     /* Specify how TypeScript looks up a file from a given module specifier. */
-    "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
-    "outDir": "dist",                                   /* Specify an output folder for all emitted files. */
-    "noEmit": false,                                   /* Disable emitting files from a compilation. */
-    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-    // "preserveSymlinks": true,                         /* Disable resolving symlinks to their realpath. This correlates to the same flag in node. */
-    "allowImportingTsExtensions": true,
-    "emitDeclarationOnly": true,
-    "declaration": true,
-    /* Type Checking */
-    "strict": true,                                      /* Enable all strict type-checking options. */
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES6",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "rootDir": "./src"
+
   },
-  "include": ["src/**/*"],
+  "include": ["./src/**/*"]
 }
