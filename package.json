@@ -2,13 +2,13 @@
   "name": "interview-portal-api",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/index.js",
+    "start": "npx tsx src/index.ts",
     "build": "npx tsc",
-    "dev": "tsc -w && nodemon dist/index.js",
+    "dev": "nodemon",
     "postinstall": "cd src && prisma generate"
   },
   "author": "",
@@ -41,6 +41,7 @@
     "@types/nodemailer": "^6.4.15",
     "prisma": "^5.13.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.13.3",
     "typescript": "^5.4.5"
   }
 }
