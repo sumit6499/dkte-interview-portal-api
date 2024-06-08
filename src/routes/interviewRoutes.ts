@@ -1,11 +1,11 @@
 import express from "express";
-import auth from "../middleware/auth.js";
+import auth from "../middleware/auth.ts";
 import {
   scheduleInterview,
   getFeedback,
   getInterviews,
   createFeedback,
-} from "../controllers/interview.js";
+} from "../controllers/interview.ts";
 
 const router = express.Router();
 

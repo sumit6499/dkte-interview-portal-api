@@ -2,8 +2,9 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import sendInterviewNotification from "../feat/mail.js";
 import moment from "moment";
+import { Request,Response } from "express";
 
-const scheduleInterview = async (req, res) => {
+const scheduleInterview = async (req:Request, res:Response) => {
   try {
     const { link, dateString, startedAt, endsAt, interviewID } = req.body;
 
@@ -106,7 +107,7 @@ const scheduleInterview = async (req, res) => {
   }
 };
 
-const createFeedback = async (req, res) => {
+const createFeedback = async (req:Request, res:Response) => {
   try {
     const {
       technical,
@@ -174,7 +175,7 @@ const createFeedback = async (req, res) => {
   }
 };
 
-const getFeedback = async (req, res) => {
+const getFeedback = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
 
@@ -208,7 +209,7 @@ const getFeedback = async (req, res) => {
   }
 };
 
-const getInterviews = async (req, res) => {
+const getInterviews = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
     const { filter } = req.query;

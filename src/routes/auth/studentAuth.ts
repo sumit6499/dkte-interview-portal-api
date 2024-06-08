@@ -2,7 +2,7 @@ import express from "express";
 import {
   login,
   signUp,
-} from "../../controllers/students.js";
+} from "../../controllers/students.ts";
 import multer from "multer";
 
 const storage = multer.memoryStorage();

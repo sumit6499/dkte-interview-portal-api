@@ -1,8 +1,9 @@
 import express from "express";
-import { login, signUp } from "../../controllers/interviewer.js";
+import { signUp, login } from "../../controllers/admin.ts";
 import multer from "multer";
 
 const storage = multer.memoryStorage();
+
 const upload = multer({ storage: storage });
 
 const router = express.Router();

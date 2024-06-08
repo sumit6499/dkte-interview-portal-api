@@ -1,3 +1,4 @@
+import {Request,Response} from 'express'
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import dotenv from "dotenv";
@@ -9,19 +10,19 @@ import {
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import s3client from '../setup/awsClient.js'
 
 dotenv.config();
 
-const s3client = new S3Client({
-  region: "ap-south-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
 
-const login = async (req, res) => {
+
+const login = async (req:Request, res:Response) => {
   try {
+
+    if(!process.env.JWT_SECRET_KEY){
+      throw new Error('Jwt secret not found')
+    }
+
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -78,11 +79,16 @@ const login = async (req, res) => {
   }
 };
 
-const signUp = async (req, res) => {
+const signUp = async (req:Request, res:Response) => {
   const { name, dept, phone, email, password } = req.body;
   const idCard = req.file;
   console.log(idCard);
   try {
+
+    if(!process.env.JWT_SECRET_KEY){
+      throw new Error('Jwt secret not found')
+    }
+
     if (!idCard || !name || !dept || !email || !password || !phone) {
       return res.status(400).json({
         succes: false,
@@ -127,6 +133,7 @@ const signUp = async (req, res) => {
     const idCardURL = await getIdCardURL();
 
     const encryptedPassword = await bcrypt.hash(password, 12);
+    
 
     const faculty = await prisma.faculty.create({
       data: {
@@ -160,7 +167,7 @@ const signUp = async (req, res) => {
   }
 };
 
-const updateAdmin = async (req, res) => {
+const updateAdmin = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
     const adminData = req.body;
@@ -186,7 +193,7 @@ const updateAdmin = async (req, res) => {
     } else {
       const faculty = await prisma.faculty.update({
         where: {
-          id: id,
+          id: _id,
         },
         data: adminData,
       });

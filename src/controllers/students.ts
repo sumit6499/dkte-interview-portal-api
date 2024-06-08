@@ -1,31 +1,29 @@
+import { Request,Response } from "express";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {
-  S3Client,
   PutObjectCommand,
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import s3client from '../setup/awsClient.js'
+
 
 dotenv.config();
 
-const s3client = new S3Client({
-  region: "ap-south-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
 
-const signUp = async (req, res) => {
+
+const signUp = async (req:Request, res:Response) => {
   const { name, PRN, email, password, phone, dept, UPI } = req.body;
 
-  const resume = req.files["resume"][0];
-  const idCard = req.files["idCard"][0];
-  const paymentImg = req.files["paymentImage"][0];
+  const files=req.files as {[fieldname:string]:Express.Multer.File[]}
+
+  const resume = files["resume"][0];
+  const idCard = files["idCard"][0];
+  const paymentImg = files["paymentImage"][0];
 
   try {
     if (
@@ -150,6 +148,10 @@ const signUp = async (req, res) => {
       },
     });
 
+    if(!process.env.JWT_SECRET_KEY){
+      throw new Error("JWT secret not found")
+    }
+
     const token = jwt.sign(
       { email: student.email, id: student.id },
       process.env.JWT_SECRET_KEY,
@@ -171,7 +173,7 @@ const signUp = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
+const login = async (req:Request, res:Response) => {
   try {
     const { email, password } = req.body;
 
@@ -205,6 +207,11 @@ const login = async (req, res) => {
       });
     }
 
+    if(!process.env.JWT_SECRET_KEY){
+      throw new Error("JWT secret not found")
+    }
+
+
     const token = jwt.sign(
       {
         email: existingUser.email,
@@ -229,7 +236,7 @@ const login = async (req, res) => {
   }
 };
 
-const updateStudent = async (req, res) => {
+const updateStudent = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
     const studentData = req.body;
@@ -277,7 +284,7 @@ const updateStudent = async (req, res) => {
   }
 };
 
-const getStudent = async (req, res) => {
+const getStudents = async (req:Request, res:Response) => {
   try {
     const students = await prisma.student.findMany({
       include: {
@@ -307,7 +314,7 @@ const getStudent = async (req, res) => {
   }
 };
 
-const deleteStudent = async (req, res) => {
+const deleteStudent = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
 
@@ -337,7 +344,7 @@ const deleteStudent = async (req, res) => {
   }
 };
 
-const uploadResume = async (req, res) => {
+const uploadResume = async (req:Request, res:Response) => {
   try {
     const resume = req.file;
     const { id: _id } = req.params;
@@ -397,7 +404,7 @@ const uploadResume = async (req, res) => {
   }
 };
 
-const uploadID = async (req, res) => {
+const uploadID = async (req:Request, res:Response) => {
   try {
     console.log(req.file);
 
@@ -414,7 +421,7 @@ const uploadID = async (req, res) => {
   }
 };
 
-const getStudentInfo = async (req, res) => {
+const getStudentInfo = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
     const { filter } = req.query;
@@ -527,7 +534,7 @@ export {
   signUp,
   updateStudent,
   deleteStudent,
-  getStudent,
+  getStudents,
   uploadResume,
   uploadID,
   getStudentInfo,

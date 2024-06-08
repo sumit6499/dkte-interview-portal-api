@@ -1,30 +1,21 @@
 import { PrismaClient } from "@prisma/client";
+import {Request,Response} from 'express'
 const prisma = new PrismaClient();
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from "@aws-sdk/client-s3";
+import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import s3Client from "../setup/awsClient.js";
 
 dotenv.config();
 
-const s3client = new S3Client({
-  region: "ap-south-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
-
-const signUp = async (req, res) => {
+const signUp = async (req:Request, res:Response) => {
   const { name, email, phone, freeday, startTime, endTime, password } =
     req.body;
   const idCard = req.file;
   try {
+
     if (
       !name ||
       !freeday ||
@@ -64,14 +55,14 @@ const signUp = async (req, res) => {
         ContentType: idCard.mimetype,
       });
 
-      await s3client.send(command);
+      await s3Client.send(command);
 
       const getObjectCmd = new GetObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `interviewer/idCard/${idCard.originalname}`,
       });
 
-      const url = await getSignedUrl(s3client, getObjectCmd, {
+      const url = await getSignedUrl(s3Client, getObjectCmd, {
         expiresIn: 60 * 60 * 24 * 7,
       });
       return url;
@@ -91,6 +82,10 @@ const signUp = async (req, res) => {
         id_card: idCardURL,
       },
     });
+
+    if(!process.env.JWT_SECRET_KEY){
+      throw new Error('Jwt secret not found')
+    }
 
     const token = jwt.sign(
       { email: interviewer.email, id: interviewer.id },
@@ -113,7 +108,7 @@ const signUp = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
+const login = async (req:Request, res:Response) => {
   try {
     const { email, password } = req.body;
 
@@ -147,6 +142,10 @@ const login = async (req, res) => {
       });
     }
 
+    if(!process.env.JWT_SECRET_KEY){
+      throw new Error('Jwt secret not found')
+    }
+
     const token = jwt.sign(
       {
         email: existingUser.email,
@@ -170,13 +169,15 @@ const login = async (req, res) => {
     });
   }
 };
-const getInterviewers = async (req, res) => {
+const getInterviewers = async (req:Request, res:Response) => {
   try {
+    
     console.log(req.params);
-    const { day: day } = await req.params;
+    const { day } =  req.params;
     console.log("THe day si ", day);
     const interviewers = await prisma.interviewer.findMany({
       where: {
+        //@ts-ignore
         freeday: day,
       },
     });
@@ -201,12 +202,12 @@ const getInterviewers = async (req, res) => {
   }
 };
 
-const updateInterviewerInfo = async (req, res) => {
+const updateInterviewerInfo = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
-    const  interviewerData  = req.body;
-    console.log("the req os",req.body)
-console.log("TYje data here uis ",interviewerData)
+    const interviewerData = req.body;
+    console.log("the req os", req.body);
+    console.log("TYje data here uis ", interviewerData);
     if (!interviewerData) {
       return res.status(401).json({
         success: false,
@@ -249,7 +250,7 @@ console.log("TYje data here uis ",interviewerData)
     }
   }
 };
-const uploadIDcard = async (req, res) => {
+const uploadIDcard = async (req:Request, res:Response) => {
   try {
     const id_card = req.file;
     const { id: _id } = req.params;
@@ -269,14 +270,14 @@ const uploadIDcard = async (req, res) => {
         Body: id_card.buffer,
         ContentType: id_card.mimetype,
       });
-      await s3client.send(command);
+      await s3Client.send(command);
 
       const getObjectCmd = new GetObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `interviewer/idCard/${id_card.originalname}`,
       });
 
-      const url = await getSignedUrl(s3client, getObjectCmd, {
+      const url = await getSignedUrl(s3Client, getObjectCmd, {
         expiresIn: 60 * 60 * 24 * 7, //one week
       });
       return url;
@@ -308,4 +309,3 @@ const uploadIDcard = async (req, res) => {
 };
 
 export { login, signUp, getInterviewers, updateInterviewerInfo, uploadIDcard };
-

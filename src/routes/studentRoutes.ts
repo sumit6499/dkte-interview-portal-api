@@ -1,12 +1,12 @@
-import express from "express";
-import auth from "../middleware/auth.js";
+import express,{Request,Response,NextFunction} from "express";
+import auth from "../middleware/auth.ts";
 import {
   updateStudent,
-  getStudent,
+  getStudents,
   deleteStudent,
   getStudentInfo,
   uploadResume,
-} from "../controllers/students.js";
+} from "../controllers/students.ts";
 import multer from "multer";
 
 const storage = multer.memoryStorage();
@@ -18,7 +18,7 @@ const router = express.Router();
 
 router.get("/:id/info", auth, getStudentInfo);
 router.patch("/:id", auth, updateStudent);
-router.get("/all", auth, getStudent);
+router.get("/all", auth, getStudents);
 router.delete("/:id", auth, deleteStudent);
 router.patch("/:id/upload", upload.single("resume"), auth, uploadResume);
 

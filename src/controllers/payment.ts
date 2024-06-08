@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
+import {Request,Response} from 'express'
 const prisma = new PrismaClient();
 
-const getPayment = async (req, res) => {
+const getPayment = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
 

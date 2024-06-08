@@ -4,6 +4,7 @@ import interviewScheduleMail from '../mails/interviewMail.js'
 dotenv.config();
 
 
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host:"smtp.gmail.com",
@@ -15,7 +16,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendInterviewNotification = (from,to,studentName, interviewerName, interviewLink, interviewDate, interviewTime) => {
+const sendInterviewNotification = (from:string,to:string,studentName:string, interviewerName:string, interviewLink:string, interviewDate:string, interviewTime:string) => {
     const mailOptions = {
         from: from,
         to: to,

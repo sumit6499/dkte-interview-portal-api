@@ -1,9 +1,10 @@
+
 const interviewScheduleMail = (
-  studentName,
-  interviewerName,
-  interviewLink,
-  interviewDate,
-  interviewTime
+  studentName:string,
+  interviewerName:string,
+  interviewLink:string,
+  interviewDate:string,
+  interviewTime:string,
 ) => {
   return `
     <!DOCTYPE html>
