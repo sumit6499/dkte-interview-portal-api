@@ -7,7 +7,10 @@ const connect = async () => {
     .then(() => {
       console.log("Postgres connected");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err)
+      return err
+    });
 };
 
 export default connect;

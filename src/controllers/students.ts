@@ -11,21 +11,26 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3client from '../setup/awsClient.js'
 
+import addStudent from '../services/students/addStudent'
 
 dotenv.config();
 
 
 
 const signUp = async (req:Request, res:Response) => {
-  const { name, PRN, email, password, phone, dept, UPI } = req.body;
 
+
+  
+  
   const files=req.files as {[fieldname:string]:Express.Multer.File[]}
-
-  const resume = files["resume"][0];
-  const idCard = files["idCard"][0];
-  const paymentImg = files["paymentImage"][0];
-
+  
+  
   try {
+    const { name, PRN, email, password, phone, dept, UPI } = req.body;
+    const resume = files["resume"][0];
+    const idCard = files["idCard"][0];
+    const paymentImg = files["paymentImage"][0];
+    console.log(resume,paymentImg,idCard,name,PRN,email,password,phone,dept,UPI)
     if (
       !name ||
       !PRN ||
@@ -44,13 +49,14 @@ const signUp = async (req:Request, res:Response) => {
       });
     }
 
-    // console.log(idCard,resume)
 
     const existingUser = await prisma.student.findFirst({
       where: {
         email: { equals: email },
       },
     });
+
+
 
     if (existingUser) {
       return res.status(403).json({
@@ -129,6 +135,8 @@ const signUp = async (req:Request, res:Response) => {
 
     const paymentImgURL = await getPaymentImgURL();
 
+    // addStudent()
+
     const student = await prisma.student.create({
       data: {
         name: name,
@@ -146,6 +154,12 @@ const signUp = async (req:Request, res:Response) => {
           },
         },
       },
+    })
+    .catch(err=>{
+      return res.json({
+        success:false,
+        msg:err,
+      })
     });
 
     if(!process.env.JWT_SECRET_KEY){
@@ -153,7 +167,8 @@ const signUp = async (req:Request, res:Response) => {
     }
 
     const token = jwt.sign(
-      { email: student.email, id: student.id },
+      //@ts-ignore
+      { email: email, id: student.id },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
     );

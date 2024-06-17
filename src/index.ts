@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import logger from './middleware/logger'
 import connect from "./setup/databse";
 import studentAuth from "./routes/auth/studentAuth";
 import adminAuth from "./routes/auth/adminAuth";
@@ -10,7 +11,6 @@ import interviewerAuth from "./routes/auth/interviewerAuth";
 import studentRoutes from "./routes/studentRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import interviewRoutes from "./routes/interviewRoutes";
-import paymentRoutes from "./routes/paymentRoutes";
 import interviewerRoutes from "./routes/interviewerRoutes";
 
 const prisma = new PrismaClient();
@@ -30,12 +30,7 @@ app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(express.json({ limit: "30mb" }));
 app.use(cookieParser());
 
-app.use((req:Request, res:Response, next:NextFunction) => {
-  console.log(
-    "http method=>" + `${req.method} -> ${req.originalUrl} ->` + Date.now()
-  );
-  next();
-});
+app.use(logger);
 
 //Auth routes
 app.use("/students", studentAuth);
@@ -49,7 +44,7 @@ app.use("/api/v1/auth/interview", interviewRoutes);
 app.use("/api/v1/auth/interviewer", interviewerRoutes);
 
 //database connect
-connect();
+connect()
 
 
 
