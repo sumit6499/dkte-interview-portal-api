@@ -11,6 +11,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3client from '../setup/awsClient'
+import {winstonLogger as logger} from '../middleware/logger'
 
 dotenv.config();
 
@@ -70,7 +71,7 @@ const login = async (req:Request, res:Response) => {
       token: token,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
 
     return res.status(500).json({
       success: false,
@@ -82,7 +83,7 @@ const login = async (req:Request, res:Response) => {
 const signUp = async (req:Request, res:Response) => {
   const { name, dept, phone, email, password } = req.body;
   const idCard = req.file;
-  console.log(idCard);
+
   try {
 
     if(!process.env.JWT_SECRET_KEY){
@@ -159,7 +160,7 @@ const signUp = async (req:Request, res:Response) => {
       msg: "User Successfully created",
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(401).json({
       succes: false,
       msg: "Internal Server error",
@@ -197,7 +198,7 @@ const updateAdmin = async (req:Request, res:Response) => {
         },
         data: adminData,
       });
-      console.log(faculty);
+      
 
       return res.status(200).json({
         success: true,
@@ -206,7 +207,7 @@ const updateAdmin = async (req:Request, res:Response) => {
       });
     }
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server error",

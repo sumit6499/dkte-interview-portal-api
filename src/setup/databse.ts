@@ -1,15 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import {winstonLogger as logger} from '../middleware/logger'
 
 const connect = async () => {
   await prisma
     .$connect()
     .then(() => {
-      console.log("Postgres connected");
+      logger.info("Postgres connected successfully")
     })
     .catch((err) => {
-      console.log(err)
-      return err
+      logger.error(JSON.stringify(err))      
     });
 };
 

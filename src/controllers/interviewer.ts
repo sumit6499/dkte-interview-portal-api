@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3Client from "../setup/awsClient";
+import {winstonLogger as logger} from '../middleware/logger'
 
 dotenv.config();
 
@@ -100,7 +101,7 @@ const signUp = async (req:Request, res:Response) => {
       msg: "User Successfully created",
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(401).json({
       succes: false,
       msg: "Internal Server error",
@@ -161,8 +162,7 @@ const login = async (req:Request, res:Response) => {
       token: token,
     });
   } catch (error) {
-    console.log(error);
-
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -172,16 +172,13 @@ const login = async (req:Request, res:Response) => {
 const getInterviewers = async (req:Request, res:Response) => {
   try {
     
-    console.log(req.params);
     const { day } =  req.params;
-    console.log("THe day si ", day);
     const interviewers = await prisma.interviewer.findMany({
       where: {
         //@ts-ignore
         freeday: day,
       },
     });
-    console.log("the itnerivwers are" + interviewers);
     if (!interviewers) {
       return res.status(404).json({
         success: false,
@@ -195,6 +192,7 @@ const getInterviewers = async (req:Request, res:Response) => {
       data: interviewers,
     });
   } catch (error) {
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -206,8 +204,6 @@ const updateInterviewerInfo = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
     const interviewerData = req.body;
-    console.log("the req os", req.body);
-    console.log("TYje data here uis ", interviewerData);
     if (!interviewerData) {
       return res.status(401).json({
         success: false,
@@ -241,7 +237,7 @@ const updateInterviewerInfo = async (req:Request, res:Response) => {
       data: updatedInterviewer,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     if (!res.headersSent) {
       return res.status(500).json({
         success: false,
@@ -254,7 +250,6 @@ const uploadIDcard = async (req:Request, res:Response) => {
   try {
     const id_card = req.file;
     const { id: _id } = req.params;
-    console.log(req.file);
 
     if (!id_card) {
       return res.status(404).json({
@@ -300,7 +295,7 @@ const uploadIDcard = async (req:Request, res:Response) => {
       data: updatedInterviewer,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server errors",

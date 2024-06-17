@@ -3,13 +3,13 @@ const prisma = new PrismaClient();
 import sendInterviewNotification from "../feat/mail";
 import moment from "moment";
 import { Request,Response } from "express";
+import {winstonLogger as logger} from '../middleware/logger'
 
 const scheduleInterview = async (req:Request, res:Response) => {
   try {
     const { link, dateString, startedAt, endsAt, interviewID } = req.body;
 
     const { id: _id } = req.params;
-    console.log(_id);
 
     if (!link || !dateString || !startedAt || !endsAt || !interviewID || !_id) {
       return res.status(400).json({
@@ -32,9 +32,7 @@ const scheduleInterview = async (req:Request, res:Response) => {
     }
 
     const [year, month, day] = dateString.split("-").map(Number);
-    console.log(year, month, day);
     const [startHours, startMinutes] = startedAt.split(":").map(Number);
-    console.log(startHours, startMinutes);
     const [endHours, endMinutes] = endsAt.split(":").map(Number);
 
     const date = new Date(year, month - 1, day);
@@ -49,7 +47,6 @@ const scheduleInterview = async (req:Request, res:Response) => {
         endsAt: endTime,
       },
     });
-    console.log(interview);
 
     const student = await prisma.student.update({
       where: {
@@ -77,7 +74,6 @@ const scheduleInterview = async (req:Request, res:Response) => {
       },
     });
 
-    console.log("student", student, "interviewer", interview);
 
     const formattedDate = moment(interview.date).format("YYYY-MM-DD");
     const formattedTime = moment(interview.startedAt).format("hh:mm A");
@@ -99,7 +95,7 @@ const scheduleInterview = async (req:Request, res:Response) => {
       msg: "Interview scheduled successfully",
     });
   } catch (error) {
-    console.log(error);
+    
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -137,7 +133,6 @@ const createFeedback = async (req:Request, res:Response) => {
       },
     });
 
-    console.log(existingFeedback);
 
     if (existingFeedback) {
       return res.status(409).json({
@@ -167,7 +162,7 @@ const createFeedback = async (req:Request, res:Response) => {
       msg: "Feedback created successfully",
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -178,6 +173,13 @@ const createFeedback = async (req:Request, res:Response) => {
 const getFeedback = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
+
+    const interviews=await prisma.interview.findMany({
+      include:{
+        feedback:true
+      }
+    })
+
 
     const feedback = await prisma.interview.findFirst({
       where: {
@@ -201,7 +203,7 @@ const getFeedback = async (req:Request, res:Response) => {
       data: feedback,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -326,13 +328,12 @@ const getInterviews = async (req:Request, res:Response) => {
         data: previousInterview,
       });
     }
-    console.log("filer obtainerd is ", filter);
     return res.status(400).json({
       success: false,
       msg: "Filter value invalid",
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server error",

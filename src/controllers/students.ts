@@ -11,7 +11,7 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3client from '../setup/awsClient.js'
 
-import addStudent from '../services/students/addStudent'
+import { winstonLogger as logger } from "../middleware/logger.js";
 
 dotenv.config();
 
@@ -25,12 +25,12 @@ const signUp = async (req:Request, res:Response) => {
   const files=req.files as {[fieldname:string]:Express.Multer.File[]}
   
   
+  
   try {
     const { name, PRN, email, password, phone, dept, UPI } = req.body;
     const resume = files["resume"][0];
     const idCard = files["idCard"][0];
     const paymentImg = files["paymentImage"][0];
-    console.log(resume,paymentImg,idCard,name,PRN,email,password,phone,dept,UPI)
     if (
       !name ||
       !PRN ||
@@ -180,7 +180,7 @@ const signUp = async (req:Request, res:Response) => {
       msg: "User Successfully created",
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(401).json({
       succes: false,
       msg: "Internal Server error",
@@ -242,8 +242,7 @@ const login = async (req:Request, res:Response) => {
       token: token,
     });
   } catch (error) {
-    console.log(error);
-
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -282,7 +281,6 @@ const updateStudent = async (req:Request, res:Response) => {
         data: studentData,
       });
 
-      console.log(student);
 
       return res.status(200).json({
         success: true,
@@ -291,7 +289,7 @@ const updateStudent = async (req:Request, res:Response) => {
       });
     }
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -314,7 +312,6 @@ const getStudents = async (req:Request, res:Response) => {
       });
     }
 
-    console.log(students);
 
     return res.status(200).json({
       success: true,
@@ -351,7 +348,7 @@ const deleteStudent = async (req:Request, res:Response) => {
       msg: "Student deleted successfully",
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -363,7 +360,6 @@ const uploadResume = async (req:Request, res:Response) => {
   try {
     const resume = req.file;
     const { id: _id } = req.params;
-    console.log(req.file);
 
     if (!resume) {
       return res.status(404).json({
@@ -411,7 +407,7 @@ const uploadResume = async (req:Request, res:Response) => {
       data: updatedStudent,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server errors",
@@ -421,14 +417,13 @@ const uploadResume = async (req:Request, res:Response) => {
 
 const uploadID = async (req:Request, res:Response) => {
   try {
-    console.log(req.file);
 
     return res.status(200).json({
       success: true,
       msg: "Success",
     });
   } catch (error) {
-    console.log(error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
       success: false,
       msg: "Internal server errors",
@@ -535,9 +530,8 @@ const getStudentInfo = async (req:Request, res:Response) => {
       data: student,
     });
   } catch (error) {
-    console.log("THe err is " + error);
+    logger.error(JSON.stringify(error))
     return res.status(500).json({
-      // console.log(error),
       success: false,
       msg: "Internal Server error",
     });

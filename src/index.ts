@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
-import logger from './middleware/logger'
+import {logger} from './middleware/logger'
 import connect from "./setup/databse";
 import studentAuth from "./routes/auth/studentAuth";
 import adminAuth from "./routes/auth/adminAuth";
@@ -13,11 +13,12 @@ import adminRoutes from "./routes/adminRoutes";
 import interviewRoutes from "./routes/interviewRoutes";
 import interviewerRoutes from "./routes/interviewerRoutes";
 
-const prisma = new PrismaClient();
 dotenv.config();
+
 
 const app = express();
 const PORT = 3000 || process.env.PORT;
+
 
 app.use(
   cors({
@@ -45,8 +46,6 @@ app.use("/api/v1/auth/interviewer", interviewerRoutes);
 
 //database connect
 connect()
-
-
 
 app.get("/", async (req:Request, res:Response) => {
 
