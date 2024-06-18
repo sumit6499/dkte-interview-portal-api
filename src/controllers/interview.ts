@@ -7,11 +7,11 @@ import {winstonLogger as logger} from '../middleware/logger'
 
 const scheduleInterview = async (req:Request, res:Response) => {
   try {
-    const { link, dateString, startedAt, endsAt, interviewID } = req.body;
+    const { link, dateString, startedAt, endsAt, interviewID,facultyID } = req.body;
 
     const { id: _id } = req.params;
 
-    if (!link || !dateString || !startedAt || !endsAt || !interviewID || !_id) {
+    if (!link || !dateString || !startedAt || !endsAt || !interviewID || !_id ||!facultyID) {
       return res.status(400).json({
         success: false,
         msg: "Please provide all details",
@@ -45,6 +45,7 @@ const scheduleInterview = async (req:Request, res:Response) => {
         date: date,
         startedAt: startTime,
         endsAt: endTime,
+        facultyId:facultyID
       },
     });
 
@@ -74,6 +75,8 @@ const scheduleInterview = async (req:Request, res:Response) => {
       },
     });
 
+   
+
 
     const formattedDate = moment(interview.date).format("YYYY-MM-DD");
     const formattedTime = moment(interview.startedAt).format("hh:mm A");
@@ -95,7 +98,8 @@ const scheduleInterview = async (req:Request, res:Response) => {
       msg: "Interview scheduled successfully",
     });
   } catch (error) {
-    
+    logger.error(JSON.stringify(error))
+    console.log(error)
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -215,13 +219,6 @@ const getInterviews = async (req:Request, res:Response) => {
   try {
     const { id: _id } = req.params;
     const { filter } = req.query;
-
-    const user = await prisma.faculty.findFirst({
-      where: {
-        id: _id,
-      },
-    });
-
     if (filter === "today") {
       const date = new Date();
       const interview = await prisma.interview.findMany({
@@ -240,6 +237,7 @@ const getInterviews = async (req:Request, res:Response) => {
           ],
         },
       });
+
 
       if (!interview) {
         return res.status(404).json({
@@ -262,7 +260,7 @@ const getInterviews = async (req:Request, res:Response) => {
       const upcomingInterview = await prisma.interview.findMany({
         where: {
           date: {
-            gt: upcomingDay,
+            gte: upcomingDay,
           },
           OR: [
             {
@@ -278,6 +276,7 @@ const getInterviews = async (req:Request, res:Response) => {
         },
       });
 
+      console.log(upcomingInterview)
       if (!upcomingInterview) {
         return res.status(404).json({
           success: false,
@@ -299,7 +298,7 @@ const getInterviews = async (req:Request, res:Response) => {
       const previousInterview = await prisma.interview.findMany({
         where: {
           date: {
-            lt: previousDay,
+            lte: previousDay,
           },
           OR: [
             {

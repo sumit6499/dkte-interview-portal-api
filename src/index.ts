@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
-import {logger} from './middleware/logger'
+import {logger, winstonLogger} from './middleware/logger'
 import connect from "./setup/databse";
 import studentAuth from "./routes/auth/studentAuth";
 import adminAuth from "./routes/auth/adminAuth";
@@ -15,7 +15,7 @@ import interviewerRoutes from "./routes/interviewerRoutes";
 
 dotenv.config();
 
-
+const prisma=new PrismaClient()
 const app = express();
 const PORT = 3000 || process.env.PORT;
 
@@ -31,7 +31,7 @@ app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(express.json({ limit: "30mb" }));
 app.use(cookieParser());
 
-app.use(logger);
+// app.use(logger);
 
 //Auth routes
 app.use("/students", studentAuth);
@@ -46,6 +46,7 @@ app.use("/api/v1/auth/interviewer", interviewerRoutes);
 
 //database connect
 connect()
+
 
 app.get("/", async (req:Request, res:Response) => {
 
