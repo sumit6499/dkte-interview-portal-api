@@ -155,12 +155,7 @@ const signUp = async (req:Request, res:Response) => {
         },
       },
     })
-    .catch(err=>{
-      return res.json({
-        success:false,
-        msg:err,
-      })
-    });
+
 
     if(!process.env.JWT_SECRET_KEY){
       throw new Error("JWT secret not found")

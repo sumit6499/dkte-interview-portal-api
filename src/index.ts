@@ -31,7 +31,7 @@ app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(express.json({ limit: "30mb" }));
 app.use(cookieParser());
 
-// app.use(logger);
+app.use(logger);
 
 //Auth routes
 app.use("/students", studentAuth);

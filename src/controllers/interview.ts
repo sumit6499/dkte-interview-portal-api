@@ -4,6 +4,8 @@ import sendInterviewNotification from "../feat/mail";
 import moment from "moment";
 import { Request,Response } from "express";
 import {winstonLogger as logger} from '../middleware/logger'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const scheduleInterview = async (req:Request, res:Response) => {
   try {
@@ -84,7 +86,7 @@ const scheduleInterview = async (req:Request, res:Response) => {
     //mail sending feat
 
     sendInterviewNotification(
-      "sumitpadalkar08@gmail.com",
+      process.env.MAIL_USER_ID,
       `${student.email} , ${interviewer.email}`,
       `${student.name}`,
       `${interviewer.name}`,

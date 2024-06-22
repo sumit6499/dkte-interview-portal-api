@@ -82,10 +82,10 @@ const login = async (req:Request, res:Response) => {
 
 const signUp = async (req:Request, res:Response) => {
   const { name, dept, phone, email, password } = req.body;
-  const idCard = req.file;
-
+  
   try {
-
+    
+    const idCard = req.file;
     if(!process.env.JWT_SECRET_KEY){
       throw new Error('Jwt secret not found')
     }

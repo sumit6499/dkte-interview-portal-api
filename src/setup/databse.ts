@@ -8,7 +8,7 @@ const connect = async () => {
     .then(() => {
       logger.info("Postgres connected successfully")
     })
-    .catch((err) => {
+    .catch((err:ErrorCallback) => {
       logger.error(JSON.stringify(err))      
     });
 };
