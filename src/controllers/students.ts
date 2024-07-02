@@ -12,6 +12,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3client from '../setup/awsClient.js'
 
 import { winstonLogger as logger } from "../middleware/logger.js";
+import setRedis from '../setup/reddis.js'
 
 dotenv.config();
 
@@ -294,25 +295,46 @@ const updateStudent = async (req:Request, res:Response) => {
 
 const getStudents = async (req:Request, res:Response) => {
   try {
-    const students = await prisma.student.findMany({
-      include: {
-        interviews: true,
-      },
-    });
 
-    if (!students) {
-      return res.status(404).json({
-        success: false,
-        msg: "Not any student found please singup",
+    const redisClient= await setRedis()
+    const data:Object= JSON.parse(await redisClient.get('students'))
+    
+    
+    if(!data){
+
+      const students = await prisma.student.findMany({
+        include: {
+          interviews: true,
+        },
+        
+      });
+
+      const data=JSON.stringify(students)
+
+      await redisClient.set('students',data)
+      await redisClient.expire('students',5*60)
+
+      if (!students) {
+        return res.status(404).json({
+          success: false,
+          msg: "Not any student found please signup",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        msg: "All students data fetched successfully",
+        data: students,
       });
     }
+    else{
+      return res.status(200).json({
+        success:true,
+        msg: "All students data fetched successfully",
+        data:data
+      })
+    }
 
-
-    return res.status(200).json({
-      success: true,
-      msg: "All students data fetched successfully",
-      data: students,
-    });
   } catch (error) {
     return res.status(500).json({
       success: false,

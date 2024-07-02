@@ -2,8 +2,7 @@ import express,{Request,Response} from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
-import {logger, winstonLogger} from './middleware/logger'
+import {logger} from './middleware/logger'
 import connect from "./setup/databse";
 import studentAuth from "./routes/auth/studentAuth";
 import adminAuth from "./routes/auth/adminAuth";

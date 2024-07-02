@@ -22,6 +22,7 @@ router.get("/all", auth, getStudents);
 router.delete("/:id", auth, deleteStudent);
 router.patch("/:id/upload", upload.single("resume"), auth, uploadResume);
 
+
 // router.post("/:id/payment", postPayment);
 // router.get("/:id/payment", getPayment);
 export default router;

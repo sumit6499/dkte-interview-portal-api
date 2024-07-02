@@ -1,6 +1,7 @@
 import jwt,{JwtPayload} from "jsonwebtoken";
 import { Request,Response,NextFunction } from "express";
 import dotenv from "dotenv";
+import { winstonLogger as logger } from "./logger";
 dotenv.config();
 
 interface DecodedToken extends JwtPayload{
@@ -26,8 +27,6 @@ const auth = async (req:Request, res:Response, next:NextFunction) => {
 
     const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY) as DecodedToken;
 
-    console.log(decodedData);
-
     if(!decodedData.id){
       throw new Error("Decoded data doesn't contain id")
     }
@@ -37,7 +36,7 @@ const auth = async (req:Request, res:Response, next:NextFunction) => {
 
     next();
   } catch (error) {
-    console.log(error);
+    logger.error(error.message)
     return res.status(401).json({
       success: false,
       msg: "Middleware error: Unauthorized",
