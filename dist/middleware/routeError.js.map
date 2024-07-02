@@ -1,0 +1,1 @@
+{"version":3,"file":"routeError.js","sourceRoot":"","sources":["../../src/middleware/routeError.ts"],"names":[],"mappings":";;;;;;;;;;;AAEA,MAAM,UAAU,GAAC,CAAO,GAAW,EAAC,GAAY,EAAC,IAAiB,EAAC,EAAE;IACjE,GAAG,CAAC,MAAM,CAAC,GAAG,CAAC,CAAC,IAAI,CAAC;QACjB,OAAO,EAAC,KAAK;QACb,OAAO,EAAC,iBAAiB;KAC5B,CAAC,CAAA;AACN,CAAC,CAAA,CAAA;AAED,kBAAe,UAAU,CAAA"}
