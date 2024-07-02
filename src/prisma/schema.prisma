@@ -109,7 +109,10 @@ model Payment {
   image         String
   student       Student @relation(fields: [studentId], references: [id])
   studentId     String  @unique
+  isValidate   Boolean @default(false)
 }
+
+
 
 enum Day {
   SUN

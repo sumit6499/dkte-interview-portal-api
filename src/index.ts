@@ -1,4 +1,4 @@
-import express,{Request,Response,NextFunction} from "express";
+import express,{Request,Response} from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
@@ -12,10 +12,10 @@ import studentRoutes from "./routes/studentRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import interviewRoutes from "./routes/interviewRoutes";
 import interviewerRoutes from "./routes/interviewerRoutes";
+import limiter from "./middleware/rateLimiter";
 
 dotenv.config();
 
-const prisma=new PrismaClient()
 const app = express();
 const PORT = 3000 || process.env.PORT;
 
@@ -32,6 +32,7 @@ app.use(express.json({ limit: "30mb" }));
 app.use(cookieParser());
 
 app.use(logger);
+app.use(limiter);
 
 //Auth routes
 app.use("/students", studentAuth);
@@ -49,8 +50,6 @@ connect()
 
 
 app.get("/", async (req:Request, res:Response) => {
-
-
   return res.status(200).json({
     success: true,
     msg: "Hello from server",
