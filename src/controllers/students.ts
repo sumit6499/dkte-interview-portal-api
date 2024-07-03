@@ -10,9 +10,13 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3client from '../setup/awsClient.js'
+import checkEmailExist from '../services/checkEmailExist'
 
 import { winstonLogger as logger } from "../middleware/logger.js";
 import setRedis from '../setup/reddis.js'
+import { sendOtpNotification } from "../feat/mail.js";
+import storeOtp from "../services/storeOtp.js";
+import { randomInt } from "crypto";
 
 dotenv.config();
 
@@ -555,6 +559,31 @@ const getStudentInfo = async (req:Request, res:Response) => {
   }
 };
 
+const getOtpEmail=async(req:Request,res:Response)=>{
+  const {email}=req.body
+  const user=await checkEmailExist(email,'student')
+  if(!user){
+    return res.status(404).json({
+      success:false,
+      msg:"No user found"
+    }) 
+  }
+
+
+  const otp:string=String(randomInt(1000,9999))
+  
+  sendOtpNotification(process.env.MAIL_USER_ID,user.email,otp)
+
+
+  const data=storeOtp(user.id,otp,new Date(Date.now()+2*60*1000),'student')
+
+  // console.log(data)
+  return res.status(200).json({
+    success:true,
+    msg:"Otp Sent sucessfully"
+  })
+} 
+
 export {
   login,
   signUp,
@@ -564,4 +593,5 @@ export {
   uploadResume,
   uploadID,
   getStudentInfo,
+  getOtpEmail,
 };

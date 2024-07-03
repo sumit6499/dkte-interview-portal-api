@@ -15,5 +15,7 @@ router.post("/signup", upload.fields([
     { name: "idCard", maxCount: 1 },
     { name: "paymentImage", maxCount: 1 },
 ]), students_1.signUp);
+router.post("/otp", students_1.getOtpEmail);
+// router.post('/validate-otp')
 exports.default = router;
 //# sourceMappingURL=studentAuth.js.map

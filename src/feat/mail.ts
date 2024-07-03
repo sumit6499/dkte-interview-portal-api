@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import interviewScheduleMail from '../mails/interviewMail.js'
+import { winstonLogger } from "../middleware/logger.js";
+import { otpMail } from "../mails/otpMail.js";
 dotenv.config();
 
 
@@ -25,10 +27,26 @@ const sendInterviewNotification = (from:string,to:string,studentName:string, int
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+          return winstonLogger.error(error.message);
+      }
+      winstonLogger.info("Email sent: "+ info.response);
+  });
+};
+
+export const sendOtpNotification = (from:string,to:string,otp:string) => {
+    const mailOptions = {
+        from: from,
+        to: to,
+        subject: 'One Time Password',
+        html: otpMail(otp)
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            return console.log(error);
+            return winstonLogger.error(error.message);
         }
-        console.log('Email sent: ' + info.response);
+        winstonLogger.info("Email sent: "+ info.response);
     });
 };
 

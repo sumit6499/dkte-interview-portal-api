@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getOtpEmail,
   login,
   signUp,
 } from "../../controllers/students";
@@ -20,6 +21,9 @@ router.post(
   ]),
   signUp
 );
+
+router.post("/otp",getOtpEmail)
+// router.post('/validate-otp')
 
 
 export default router;

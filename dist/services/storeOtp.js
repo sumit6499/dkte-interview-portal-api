@@ -9,20 +9,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.prisma = void 0;
-const client_1 = require("@prisma/client");
-exports.prisma = new client_1.PrismaClient();
-const logger_1 = require("../middleware/logger");
-const connect = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield exports.prisma
-        .$connect()
-        .then(() => {
-        logger_1.winstonLogger.info("Postgres connected successfully");
-    })
-        .catch((err) => {
-        console.log(err);
-        logger_1.winstonLogger.error(JSON.stringify(err));
-    });
+const databse_1 = require("../setup/databse");
+const storeOtp = (id, otp, expiresAt, user) => __awaiter(void 0, void 0, void 0, function* () {
+    if (user === 'student') {
+        const data = yield databse_1.prisma.otp.create({
+            //@ts-ignore
+            data: {
+                otp: otp,
+                studentId: id,
+                expiresAt: expiresAt
+            }
+        });
+        return data;
+    }
+    else {
+        const data = yield databse_1.prisma.otp.create({
+            //@ts-ignore
+            data: {
+                otp: otp,
+                interviewID: id,
+                expiresAt: expiresAt
+            }
+        });
+        return data;
+    }
 });
-exports.default = connect;
-//# sourceMappingURL=databse.js.map
+exports.default = storeOtp;
+//# sourceMappingURL=storeOtp.js.map

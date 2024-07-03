@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStudentInfo = exports.uploadID = exports.uploadResume = exports.getStudents = exports.deleteStudent = exports.updateStudent = exports.signUp = exports.login = void 0;
+exports.getOtpEmail = exports.getStudentInfo = exports.uploadID = exports.uploadResume = exports.getStudents = exports.deleteStudent = exports.updateStudent = exports.signUp = exports.login = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -21,8 +21,12 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
 const awsClient_js_1 = __importDefault(require("../setup/awsClient.js"));
+const checkEmailExist_1 = __importDefault(require("../services/checkEmailExist"));
 const logger_js_1 = require("../middleware/logger.js");
 const reddis_js_1 = __importDefault(require("../setup/reddis.js"));
+const mail_js_1 = require("../feat/mail.js");
+const storeOtp_js_1 = __importDefault(require("../services/storeOtp.js"));
+const crypto_1 = require("crypto");
 dotenv_1.default.config();
 const signUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const files = req.files;
@@ -477,4 +481,23 @@ const getStudentInfo = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getStudentInfo = getStudentInfo;
+const getOtpEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    const user = yield (0, checkEmailExist_1.default)(email, 'student');
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            msg: "No user found"
+        });
+    }
+    const otp = String((0, crypto_1.randomInt)(1000, 9999));
+    (0, mail_js_1.sendOtpNotification)(process.env.MAIL_USER_ID, user.email, otp);
+    const data = (0, storeOtp_js_1.default)(user.id, otp, new Date(Date.now() * 2 * 60 * 1000), 'student');
+    console.log(data);
+    return res.status(200).json({
+        success: true,
+        msg: "Otp Sent sucessfully"
+    });
+});
+exports.getOtpEmail = getOtpEmail;
 //# sourceMappingURL=students.js.map

@@ -9,20 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.prisma = void 0;
 const client_1 = require("@prisma/client");
-exports.prisma = new client_1.PrismaClient();
-const logger_1 = require("../middleware/logger");
-const connect = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield exports.prisma
-        .$connect()
-        .then(() => {
-        logger_1.winstonLogger.info("Postgres connected successfully");
-    })
-        .catch((err) => {
-        console.log(err);
-        logger_1.winstonLogger.error(JSON.stringify(err));
-    });
+const prisma = new client_1.PrismaClient();
+const checkEmailExist = (email, user) => __awaiter(void 0, void 0, void 0, function* () {
+    if (user === 'student') {
+        const student = yield prisma.student.findFirst({
+            where: {
+                email: email
+            }
+        });
+        if (student)
+            return student;
+        return null;
+    }
+    else {
+        const interviewer = yield prisma.interviewer.findFirst({
+            where: {
+                email: email
+            }
+        });
+        if (interviewer)
+            return interviewer;
+        return null;
+    }
 });
-exports.default = connect;
-//# sourceMappingURL=databse.js.map
+exports.default = checkEmailExist;
+//# sourceMappingURL=checkEmailExist.js.map
