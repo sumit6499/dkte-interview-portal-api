@@ -119,14 +119,14 @@ model Payment {
 }
 
 model Otp {
-  id          String      @id @default(uuid())
-  otp         String
-  createdAt   DateTime    @default(now())
-  expiresAt   DateTime
-  Student     Student     @relation(fields: [studentId], references: [id])
-  studentId   String      @unique
-  Interview   Interviewer @relation(fields: [interviewID], references: [id])
-  interviewID String      @unique
+  id            String      @id @default(uuid())
+  otp           String
+  createdAt     DateTime    @default(now())
+  expiresAt     DateTime
+  Student       Student?     @relation(fields: [studentId], references: [id])
+  studentId     String?     @unique
+  Interviewer   Interviewer? @relation(fields: [interviewerID], references: [id])
+  interviewerID String?     @unique
 }
 
 enum Day {

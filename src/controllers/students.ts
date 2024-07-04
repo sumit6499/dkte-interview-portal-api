@@ -575,14 +575,23 @@ const getOtpEmail=async(req:Request,res:Response)=>{
   sendOtpNotification(process.env.MAIL_USER_ID,user.email,otp)
 
 
-  const data=storeOtp(user.id,otp,new Date(Date.now()+2*60*1000),'student')
+  const data=await storeOtp(user.id,otp,new Date(Date.now()+2*60*1000),'student')
 
-  // console.log(data)
+  if(!data){
+    throw new Error('Store Otp:Prisma Error')
+  }
+  const tokenData=JSON.stringify(data)
+  jwt.sign(tokenData,process.env.JWT_SECRET_KEY)
+
+  res.cookie('otpToken',tokenData,{expires:new Date(Date.now()+2*1000*60)})
+
   return res.status(200).json({
     success:true,
     msg:"Otp Sent sucessfully"
   })
 } 
+
+
 
 export {
   login,

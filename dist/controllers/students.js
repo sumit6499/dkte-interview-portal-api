@@ -492,8 +492,8 @@ const getOtpEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
     const otp = String((0, crypto_1.randomInt)(1000, 9999));
     (0, mail_js_1.sendOtpNotification)(process.env.MAIL_USER_ID, user.email, otp);
-    const data = (0, storeOtp_js_1.default)(user.id, otp, new Date(Date.now() * 2 * 60 * 1000), 'student');
-    console.log(data);
+    const data = (0, storeOtp_js_1.default)(user.id, otp, new Date(Date.now() + 2 * 60 * 1000), 'student');
+    // console.log(data)
     return res.status(200).json({
         success: true,
         msg: "Otp Sent sucessfully"
