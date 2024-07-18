@@ -17,8 +17,6 @@ const winstonLogger = (0, winston_1.createLogger)({
         new winston_1.transports.Console({
             format: consoleFormat
         }),
-        new winston_1.transports.File({ filename: "server.log", level: 'info' }),
-        new winston_1.transports.File({ filename: 'server-error.log', level: 'error' })
     ]
 });
 exports.winstonLogger = winstonLogger;

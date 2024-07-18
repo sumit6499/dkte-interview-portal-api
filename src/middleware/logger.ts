@@ -25,8 +25,6 @@ const winstonLogger=createLogger({
     new transports.Console({
       format:consoleFormat
     }),
-    new transports.File({filename:"server.log",level:'info'}),
-    new transports.File({filename:'server-error.log',level:'error'},)
   ]
     
 })
