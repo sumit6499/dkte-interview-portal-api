@@ -644,6 +644,94 @@ const verifyOtp=async (req:Request,res:Response)=>{
   }
 }
 
+const getSignUpOtp=async(req:Request,res:Response)=>{
+  try {
+    const {email}:{email:string}=req.body
+
+    const otp:string=String(randomInt(1000,9999))
+  
+    const tokenData={
+      email:email,
+    }
+  
+    const token:string=jwt.sign(tokenData,process.env.JWT_SECRET_KEY,{expiresIn:60*2})
+  
+    sendOtpNotification(process.env.MAIL_USER_ID,email,otp)
+
+    const user=await prisma.signUpOtp.findFirst({
+      where:{
+        email:email
+      }
+    })
+
+    if(!user){
+      await prisma.signUpOtp.create({
+        data:{
+          email:email,
+          otp:otp
+        }
+      })
+    }else{
+      await prisma.signUpOtp.update({
+        where:{
+          email:email
+        },
+        data:{
+          otp:otp
+        }
+      })
+    }
+  
+  
+    return res.status(200).json({
+      success:true,
+      token:token,
+      msg:"Otp Sent sucessfully"
+    })
+  } catch (error) {
+    console.log(error)
+    logger.error(error)
+    return res.status(500).json({
+      success:false,
+      msg:"Internal server error"
+    })
+  }
+ 
+}
+
+const verifySignUpOtp=async(req:Request,res:Response)=>{
+  try {
+      const {email,otp}=req.body
+
+      const dbOtp=await prisma.signUpOtp.findFirst({
+        where:{
+          email:email
+        },
+        select:{
+          otp:true
+        }
+      })
+
+      if(String(otp)===String(dbOtp.otp)){
+        return res.status(200).json({
+          success:true,
+          msg:"Otp verified successfully"
+        })
+      }else{
+        return res.status(401).json({
+          success:false,
+          msg:"Otp doesn't match"
+        })
+      }
+  } catch (error) {
+    logger.error(error)
+    return res.status(500).json({
+      success: false,
+      msg:"Internal server error"
+    })
+  }
+}
+
 export {
   login,
   signUp,
@@ -655,4 +743,6 @@ export {
   getStudentInfo,
   getOtpEmail,
   verifyOtp,
+  getSignUpOtp,
+  verifySignUpOtp,
 };
