@@ -1,9 +1,12 @@
 import express from "express";
 import {
+  getOtpEmail,
   login,
   signUp,
+  verifyOtp,
 } from "../../controllers/students";
 import multer from "multer";
+import otpAuth from "../../middleware/otpAuth";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -20,6 +23,9 @@ router.post(
   ]),
   signUp
 );
+
+router.post("/otp",getOtpEmail)
+router.post('/validate-otp',otpAuth,verifyOtp)
 
 
 export default router;

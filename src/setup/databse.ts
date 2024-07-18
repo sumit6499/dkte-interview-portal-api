@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 import {winstonLogger as logger} from '../middleware/logger'
+
 
 const connect = async () => {
   await prisma

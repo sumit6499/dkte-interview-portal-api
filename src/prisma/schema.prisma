@@ -14,19 +14,22 @@ datasource db {
 }
 
 model Student {
-  id         String      @id @default(uuid())
-  id_card    String      @unique
-  resume     String
-  createdAt  DateTime    @default(now())
-  name       String
-  PRN        String      @unique
-  dept       Dept        @default(CSE)
-  email      String      @unique
-  role       Role        @default(Student)
-  password   String
-  phone      String      @unique
-  interviews Interview[]
-  Payment    Payment?
+  id             String      @id @default(uuid())
+  id_card        String      @unique
+  resume         String
+  createdAt      DateTime    @default(now())
+  name           String
+  PRN            String      @unique
+  dept           Dept        @default(CSE)
+  isValidated    Boolean     @default(false)
+  adminValidated Boolean     @default(false)
+  email          String      @unique
+  role           Role        @default(Student)
+  password       String
+  phone          String      @unique
+  interviews     Interview[]
+  Payment        Payment?
+  Otp            Otp?
 
   @@index([id, PRN])
 }
@@ -90,17 +93,20 @@ model Feedback {
 }
 
 model Interviewer {
-  id         String      @id @default(uuid())
-  id_card    String      @unique
-  name       String
-  role       Role        @default(Interviewer)
-  email      String      @unique
-  phone      String      @unique
-  freeday    Day         @map("free_day")
-  startTime  String      @map("start_time")
-  endTime    String      @map("end_time")
-  password   String
-  interviews Interview[]
+  id             String      @id @default(uuid())
+  id_card        String      @unique
+  name           String
+  role           Role        @default(Interviewer)
+  email          String      @unique
+  phone          String      @unique
+  isValidated    Boolean     @default(false)
+  adminValidated Boolean     @default(false)
+  freeday        Day         @map("free_day")
+  startTime      String      @map("start_time")
+  endTime        String      @map("end_time")
+  password       String
+  interviews     Interview[]
+  Otp            Otp?
 }
 
 model Payment {
@@ -109,10 +115,19 @@ model Payment {
   image         String
   student       Student @relation(fields: [studentId], references: [id])
   studentId     String  @unique
-  isValidate   Boolean @default(false)
+  isValidated   Boolean @default(false)
 }
 
-
+model Otp {
+  id            String      @id @default(uuid())
+  otp           String
+  createdAt     DateTime    @default(now())
+  expiresAt     DateTime
+  Student       Student?     @relation(fields: [studentId], references: [id])
+  studentId     String?     @unique
+  Interviewer   Interviewer? @relation(fields: [interviewerID], references: [id])
+  interviewerID String?     @unique
+}
 
 enum Day {
   SUN
