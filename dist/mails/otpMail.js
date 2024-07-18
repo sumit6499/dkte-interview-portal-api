@@ -26,8 +26,8 @@ const otpMail = (otp) => {
                 overflow: hidden;
             }
             .header {
-                background-color: #4CAF50;
-                color: white;
+                background-color: #fecc00;
+                color: black;
                 text-align: center;
                 padding: 20px;
                 font-size: 24px;
@@ -59,11 +59,11 @@ const otpMail = (otp) => {
                 <p>Hello,</p>
                 <p>Your One-Time Password (OTP) for verification is:</p>
                 <p class="otp">${otp}</p>
-                <p>This OTP is valid for 10 minutes.</p>
+                <p>This OTP is valid for 2 minutes.</p>
                 <p>If you did not request this, please ignore this email.</p>
             </div>
             <div class="footer">
-                &copy; 2024 Your Company. All rights reserved.
+                &copy; 2024 DKTE Ascendere. All rights reserved.
             </div>
         </div>
     </body>

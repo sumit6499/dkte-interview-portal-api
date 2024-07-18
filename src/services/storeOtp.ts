@@ -21,7 +21,6 @@ const storeOtp = async (id: string, otp: string, expiresAt: Date, user: string) 
                 return data
             } else {
                 const data = await prisma.otp.create({
-                    //@ts-ignore
                     data: {
                         otp: otp,
                         expiresAt: expiresAt,
