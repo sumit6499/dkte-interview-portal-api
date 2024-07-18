@@ -129,6 +129,12 @@ model Otp {
   interviewerID String?     @unique
 }
 
+model SignUpOtp{
+  id String @id @default(uuid())
+  email String @unique
+  otp String 
+}
+
 enum Day {
   SUN
   MON
