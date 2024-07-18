@@ -496,8 +496,7 @@ const getOtpEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (!data) {
             throw new Error('Store Otp:Prisma Error');
         }
-        const tokenData = JSON.stringify(data);
-        const token = jsonwebtoken_1.default.sign(tokenData, process.env.JWT_SECRET_KEY);
+        const token = jsonwebtoken_1.default.sign(data, process.env.JWT_SECRET_KEY, { expiresIn: 60 * 2 });
         (0, mail_js_1.sendOtpNotification)(process.env.MAIL_USER_ID, user.email, otp);
         return res.status(200).json({
             success: true,
