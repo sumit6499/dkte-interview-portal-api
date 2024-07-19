@@ -194,8 +194,40 @@ To run this project, you will need to add the following environment variables to
      ```bash
     npm start
     ```
-    8. Configure security group
+    
+    8. Download and Install Nginx
+     ```bash
+    sudo apt-install nginx
+    sudo vim /etc/nginx/sites-available/default
+    go to server_name as domain name with www.domainname
+    in location 
+    proxy_pass http://localhost:port;
+    proxy_http_version 1.1;
+    proxy_set_header upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade
+
+    sudo nginx -t
+    sudo service nginx restart
+    ```
+
+
+    9. Install pm2
+     ```bash
+    sudo npm i -g pm2
+    ```
+    10. start ditached api server
+     ```bash
+    pm2 start index.js
+    pm2 logs
+    ```
+    11. Setup ssh
+     ```bash
+    sudo apt install python3-certbot-nginx
+    sudo certbot --nginx -d domain.com 
+    ```
+    12. Configure security group
     - attach inbound traffic to port 3000 for tcp
     - allow traffic to route from anywhere
-
     
