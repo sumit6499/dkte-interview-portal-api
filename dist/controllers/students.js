@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyOtp = exports.getOtpEmail = exports.getStudentInfo = exports.uploadID = exports.uploadResume = exports.getStudents = exports.deleteStudent = exports.updateStudent = exports.signUp = exports.login = void 0;
+exports.verifySignUpOtp = exports.getSignUpOtp = exports.verifyOtp = exports.getOtpEmail = exports.getStudentInfo = exports.uploadID = exports.uploadResume = exports.getStudents = exports.deleteStudent = exports.updateStudent = exports.signUp = exports.login = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -552,4 +552,85 @@ const verifyOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.verifyOtp = verifyOtp;
+const getSignUpOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email } = req.body;
+        const otp = String((0, crypto_1.randomInt)(1000, 9999));
+        const tokenData = {
+            email: email,
+        };
+        const token = jsonwebtoken_1.default.sign(tokenData, process.env.JWT_SECRET_KEY, { expiresIn: 60 * 2 });
+        (0, mail_js_1.sendOtpNotification)(process.env.MAIL_USER_ID, email, otp);
+        const user = yield prisma.signUpOtp.findFirst({
+            where: {
+                email: email
+            }
+        });
+        if (!user) {
+            yield prisma.signUpOtp.create({
+                data: {
+                    email: email,
+                    otp: otp
+                }
+            });
+        }
+        else {
+            yield prisma.signUpOtp.update({
+                where: {
+                    email: email
+                },
+                data: {
+                    otp: otp
+                }
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            token: token,
+            msg: "Otp Sent sucessfully"
+        });
+    }
+    catch (error) {
+        console.log(error);
+        logger_js_1.winstonLogger.error(error);
+        return res.status(500).json({
+            success: false,
+            msg: "Internal server error"
+        });
+    }
+});
+exports.getSignUpOtp = getSignUpOtp;
+const verifySignUpOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, otp } = req.body;
+        const dbOtp = yield prisma.signUpOtp.findFirst({
+            where: {
+                email: email
+            },
+            select: {
+                otp: true
+            }
+        });
+        if (String(otp) === String(dbOtp.otp)) {
+            return res.status(200).json({
+                success: true,
+                msg: "Otp verified successfully"
+            });
+        }
+        else {
+            return res.status(401).json({
+                success: false,
+                msg: "Otp doesn't match"
+            });
+        }
+    }
+    catch (error) {
+        logger_js_1.winstonLogger.error(error);
+        return res.status(500).json({
+            success: false,
+            msg: "Internal server error"
+        });
+    }
+});
+exports.verifySignUpOtp = verifySignUpOtp;
 //# sourceMappingURL=students.js.map

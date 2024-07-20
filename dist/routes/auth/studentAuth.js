@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const students_1 = require("../../controllers/students");
 const multer_1 = __importDefault(require("multer"));
 const otpAuth_1 = __importDefault(require("../../middleware/otpAuth"));
+const signUpAuth_1 = __importDefault(require("../../middleware/signUpAuth"));
 const storage = multer_1.default.memoryStorage();
 const upload = (0, multer_1.default)({ storage: storage });
 const router = express_1.default.Router();
@@ -18,5 +19,7 @@ router.post("/signup", upload.fields([
 ]), students_1.signUp);
 router.post("/otp", students_1.getOtpEmail);
 router.post('/validate-otp', otpAuth_1.default, students_1.verifyOtp);
+router.post('/signupOtp', students_1.getSignUpOtp);
+router.post('/signupValidate', signUpAuth_1.default, students_1.verifySignUpOtp);
 exports.default = router;
 //# sourceMappingURL=studentAuth.js.map

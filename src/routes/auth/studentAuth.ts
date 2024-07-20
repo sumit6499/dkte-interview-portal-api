@@ -29,8 +29,8 @@ router.post(
 
 router.post("/otp",getOtpEmail)
 router.post('/validate-otp',otpAuth,verifyOtp)
-router.post('/signup-otp',getSignUpOtp)
-router.post('/signup-validate',signUpOtpAuth,verifySignUpOtp)
+router.post('/signupOtp',getSignUpOtp)
+router.post('/signupValidate',signUpOtpAuth,verifySignUpOtp)
 
 
 export default router;
