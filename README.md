@@ -222,7 +222,7 @@ To run this project, you will need to add the following environment variables to
     pm2 start index.js
     pm2 logs
     ```
-    11. Setup ssh
+    11. Setup ssl cert
      ```bash
     sudo apt install python3-certbot-nginx
     sudo certbot --nginx -d domain.com 
